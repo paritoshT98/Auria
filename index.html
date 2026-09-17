@@ -2,950 +2,2051 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#10161D">
 <title>Auria — Appointment Concierge</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=Inter:wght@400;500;600&family=Noto+Sans+Devanagari:wght@400;500;600&family=Noto+Serif+Devanagari:wght@400;500&family=Noto+Sans+Oriya:wght@400;500;600&family=Noto+Serif+Oriya:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#12181F;
-    --ink-2:#1B222B;
-    --ink-3:#232C37;
-    --ink-line: rgba(237,231,218,0.10);
-    --linen:#EDE7DA;
-    --linen-2:#F6F2E9;
-    --linen-dim: rgba(237,231,218,0.62);
-    --linen-faint: rgba(237,231,218,0.38);
-    --brass:#B08D57;
-    --brass-light:#D8BD8D;
-    --brass-dim: rgba(176,141,87,0.16);
-    --sage:#8AA391;
-    --rosewood:#C1666B;
-    --radius-lg: 22px;
-    --radius-md: 14px;
-    --radius-sm: 9px;
-    --shadow-frame: 0 40px 90px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.35);
+    color-scheme: dark;
+    --ink:#10161D; --ink-2:#161E27; --ink-3:#1E2833; --ink-deep:#090D12;
+    --line: rgba(237,231,218,0.08); --line-2: rgba(237,231,218,0.15);
+    --linen:#EDE7DA; --linen-2:#F7F3EA;
+    --linen-dim: rgba(237,231,218,0.68); --linen-faint: rgba(237,231,218,0.42);
+    --brass:#B08D57; --brass-light:#E2C99A; --brass-deep:#7E6238; --brass-dim: rgba(176,141,87,0.14);
+    --gold: linear-gradient(135deg,#F3E2BD 0%,#D4B27A 40%,#B08D57 66%,#8A6B3F 100%);
+    --sage:#8AA391; --rose:#C1666B; --aqua:#7AA8B4;
+    --f-display:'Fraunces','Noto Serif Devanagari','Noto Serif Oriya',Georgia,serif;
+    --f-body:'Inter','Noto Sans Devanagari','Noto Sans Oriya',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    --ease: cubic-bezier(.22,.68,0,1);
+    --col: 440px;
+    --hdrh: 60px;
   }
-  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
-  html,body{margin:0; padding:0; height:100%;}
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html{ background: var(--ink-deep); -webkit-text-size-adjust:100%; }
   body{
+    margin:0; min-height:100svh; overflow-x:hidden;
+    font-family: var(--f-body); color: var(--linen); line-height:1.5;
     background:
-      radial-gradient(120% 90% at 18% 8%, rgba(176,141,87,0.16), transparent 55%),
-      radial-gradient(100% 80% at 85% 90%, rgba(138,163,145,0.10), transparent 55%),
-      var(--ink);
-    font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: var(--linen);
-    min-height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding: 28px 14px;
+      radial-gradient(60vw 60vw at 12% 0%, rgba(176,141,87,0.10), transparent 60%),
+      radial-gradient(50vw 50vw at 90% 100%, rgba(122,168,180,0.07), transparent 60%),
+      var(--ink-deep);
+    background-attachment: fixed;
   }
-  .stage{ display:flex; flex-direction:column; align-items:center; gap:16px; }
-  .brand-mark{ display:flex; align-items:center; gap:9px; opacity:0.9; }
-  .brand-mark .mono{
-    width:26px; height:26px; border-radius:50%;
-    border:1px solid var(--brass-light);
+  ::selection{ background: var(--brass); color:#1A140A; }
+  :focus-visible{ outline:2px solid var(--brass-light); outline-offset:3px; border-radius:10px; }
+  button{ font:inherit; color:inherit; }
+  .tap{ appearance:none; -webkit-appearance:none; border:0; background:none; padding:0; margin:0; text-align:inherit; cursor:pointer; }
+  svg{ overflow:visible; }
+
+  /* ---------- Page column (a real webpage, phone-width) ---------- */
+  .app{
+    position:relative; max-width: var(--col); margin: 0 auto; min-height:100svh;
+    background: var(--ink);
+  }
+
+  /* ---------- Header ---------- */
+  .hdr{
+    position:sticky; top:0; z-index:100;
+    display:flex; align-items:center; gap:10px;
+    padding: env(safe-area-inset-top) 16px 0; height: calc(60px + env(safe-area-inset-top));
+    background: rgba(16,22,29,0.74);
+    -webkit-backdrop-filter: saturate(160%) blur(18px); backdrop-filter: saturate(160%) blur(18px);
+    border-bottom: 1px solid var(--line);
+    transition: background .35s ease, border-color .35s ease;
+  }
+  .hdr.clear{ background: rgba(16,22,29,0); border-color: transparent; -webkit-backdrop-filter:none; backdrop-filter:none; }
+  .iconbtn{
+    width:38px; height:38px; border-radius:50%; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces', serif; font-style:italic; font-size:14px; color: var(--brass-light);
+    background: rgba(237,231,218,0.06); border:1px solid var(--line-2);
   }
-  .brand-mark span{ font-family:'Fraunces', serif; font-style:italic; font-size:17px; letter-spacing:0.01em; color: var(--linen-2); }
+  .iconbtn svg{ width:16px; height:16px; stroke: var(--linen); }
+  .iconbtn[hidden]{ display:none; }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .mono{ width:30px; height:30px; border-radius:50%; padding:1px; background: var(--gold); flex-shrink:0; }
+  .mono span{
+    width:100%; height:100%; border-radius:50%; background: var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-style:italic; font-size:15px; color: var(--brass-light);
+  }
+  .brand .word{ font-family:'Fraunces',serif; font-style:italic; font-size:20px; letter-spacing:0.01em; color: var(--linen-2); }
+  .spacer{ flex:1; }
 
-  .phone{
-    position:relative;
-    width:390px; height:844px;
-    background: var(--ink);
-    border-radius: 46px;
-    box-shadow: var(--shadow-frame), inset 0 0 0 2px rgba(237,231,218,0.06);
-    overflow:hidden;
-    border: 8px solid #05070A;
+  .lang{ position:relative; }
+  .lang-btn{
+    height:38px; padding: 0 12px 0 11px; border-radius:19px;
+    display:flex; align-items:center; gap:7px; font-size:13.5px; font-weight:500; color: var(--linen-2);
+    background: rgba(237,231,218,0.06); border:1px solid var(--line-2);
   }
-  .notch{
-    position:absolute; top:10px; left:50%; transform:translateX(-50%);
-    width:120px; height:22px; background:#05070A; border-radius:14px; z-index:50;
+  .lang-btn svg{ width:15px; height:15px; stroke: var(--brass-light); }
+  .lang-btn .chev{ width:12px; height:12px; stroke: var(--linen-faint); transition: transform .25s var(--ease); }
+  .lang-btn[aria-expanded="true"] .chev{ transform: rotate(180deg); }
+  .lang-menu{
+    position:absolute; right:0; top: calc(100% + 8px); min-width:200px; padding:6px;
+    border-radius:18px; background: rgba(24,32,41,0.92); border:1px solid var(--line-2);
+    -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+    box-shadow: 0 24px 50px -20px rgba(0,0,0,0.8);
+    transform-origin: top right; animation: pop .22s var(--ease);
   }
-  .statusbar{
-    position:absolute; top:0; left:0; right:0; height:46px;
-    display:flex; align-items:flex-end; justify-content:space-between;
-    padding: 0 26px 8px; font-size:13px; font-weight:600; color: var(--linen); z-index:40; letter-spacing:0.02em;
+  .lang-menu[hidden]{ display:none; }
+  @keyframes pop{ from{ opacity:0; transform: scale(.95) translateY(-4px); } to{ opacity:1; transform:none; } }
+  .lang-opt{
+    width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding: 11px 12px; border-radius:12px; font-size:15px; color: var(--linen-2);
   }
-  .screens{ position:absolute; inset:0; }
-  .screen{
-    position:absolute; inset:0;
-    display:flex; flex-direction:column;
-    background: var(--ink);
-    transform: translateX(100%);
-    transition: transform 420ms cubic-bezier(.22,.68,0,1);
-    opacity:0; pointer-events:none;
-  }
-  .screen.active{ transform: translateX(0); opacity:1; pointer-events:auto; z-index:10;}
-  .screen.leaving-left{ transform: translateX(-100%); opacity:1; }
-  .screen.stack-under{ transform: translateX(0); opacity:1; z-index:5; }
+  .lang-opt small{ display:block; font-size:12px; color: var(--linen-faint); margin-top:1px; }
+  .lang-opt:hover{ background: rgba(237,231,218,0.06); }
+  .lang-opt svg{ width:16px; height:16px; stroke: var(--brass-light); opacity:0; }
+  .lang-opt[aria-selected="true"] svg{ opacity:1; }
 
-  .screen-body{ flex:1; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; }
-  .screen-body::-webkit-scrollbar{ display:none; }
-
-  .topbar{
-    padding: 54px 22px 4px; display:flex; align-items:center; gap:12px; flex-shrink:0;
+  /* ---------- Toast ---------- */
+  .toast{
+    position:fixed; left:50%; top: calc(var(--hdrh) + 12px); z-index:300;
+    transform: translate(-50%, -10px); opacity:0; pointer-events:none;
+    padding: 11px 18px; border-radius:14px; max-width: calc(min(100vw, var(--col)) - 40px);
+    background: var(--linen-2); color:#141A21; font-size:13.5px; font-weight:600; text-align:center;
+    box-shadow: 0 18px 36px -12px rgba(0,0,0,0.6);
+    transition: opacity .28s ease, transform .28s var(--ease);
   }
-  .backbtn{
-    width:34px; height:34px; border-radius:50%; border:1px solid var(--ink-line);
-    display:flex; align-items:center; justify-content:center; background:var(--ink-2); cursor:pointer; flex-shrink:0;
+  .toast.show{ opacity:1; transform: translate(-50%, 0); }
+
+  /* ---------- Screen shell ---------- */
+  .screen{ min-height: calc(100svh - var(--hdrh)); display:flex; flex-direction:column; animation: screenIn .55s var(--ease); }
+  .screen.instant{ animation:none; }
+  @keyframes screenIn{ from{ opacity:0; transform: translateY(14px); } to{ opacity:1; transform:none; } }
+
+  .rv{ opacity:0; transform: translateY(18px); transition: opacity .8s var(--ease), transform .9s var(--ease); transition-delay: var(--d, 0ms); }
+  .rv.in{ opacity:1; transform:none; }
+
+  .ptitle{ padding: 18px 22px 4px; }
+  .ptitle h1{ font-family: var(--f-display); font-weight:400; font-size:34px; line-height:1.08; letter-spacing:-0.02em; margin:0; color: var(--linen-2); }
+  .ptitle .sub{ font-size:14.5px; color: var(--linen-faint); margin-top:8px; line-height:1.45; }
+  .pbody{ padding: 18px 22px 24px; display:flex; flex-direction:column; gap:18px; }
+
+  .glass{
+    background: linear-gradient(155deg, rgba(40,51,64,0.72), rgba(20,27,35,0.72));
+    border:1px solid var(--line-2); border-radius:24px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 26px 50px -30px rgba(0,0,0,0.75);
   }
-  .backbtn svg{ width:15px; height:15px; }
-  .topbar h1{ font-family:'Fraunces', serif; font-weight:500; font-size:19px; margin:0; color:var(--linen-2); }
-  .topbar .sub{ font-size:12.5px; color:var(--linen-faint); margin-top:1px; }
+  .banner{ position:relative; height:150px; overflow:hidden; }
+  .banner-svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .banner-cap{ position:absolute; left:20px; bottom:18px; }
+  .banner-cap .bc-t{ font-family: var(--f-display); font-size:22px; color: var(--linen-2); }
+  .banner-cap .bc-s{ font-size:13px; color: var(--linen-dim); margin-top:2px; display:flex; align-items:center; }
 
-  h2.serif{ font-family:'Fraunces', serif; font-weight:500; }
-
-  /* ---------- Buttons & inputs ---------- */
+  /* ---------- Buttons ---------- */
   .btn{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    height:52px; border-radius: 14px; border:none; cursor:pointer;
-    font-family:'Inter'; font-size:15px; font-weight:600; letter-spacing:0.01em;
-    transition: transform 120ms ease, filter 150ms ease;
+    position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:8px;
+    height:56px; width:100%; border-radius:16px; border:none; cursor:pointer;
+    font-family: var(--f-body); font-size:16px; font-weight:600; letter-spacing:0.005em;
+    transition: transform .15s ease, box-shadow .3s ease, opacity .2s ease;
   }
   .btn:active{ transform: scale(0.98); }
-  .btn-primary{ background: linear-gradient(180deg, var(--brass-light), var(--brass)); color:#1A140A; }
-  .btn-primary:disabled{ opacity:0.4; pointer-events:none; }
-  .btn-ghost{ background: var(--ink-2); color: var(--linen-2); border:1px solid var(--ink-line); }
-  .btn-outline{ background:transparent; color: var(--brass-light); border:1px solid rgba(176,141,87,0.45); }
-  .btn-sm{ height:40px; font-size:13.5px; border-radius:11px; padding:0 16px; }
-
-  .field{ display:flex; flex-direction:column; gap:7px; }
-  .field label{ font-size:12.5px; color: var(--linen-dim); }
-  .field input{
-    height:50px; border-radius:13px; border:1px solid var(--ink-line); background: var(--ink-2);
-    color: var(--linen-2); padding: 0 16px; font-size:15.5px; font-family:'Inter';
-    outline:none;
+  .btn-primary{
+    background: var(--gold); color:#1A140A;
+    box-shadow: 0 14px 34px -14px rgba(212,178,122,0.65), inset 0 1px 0 rgba(255,255,255,0.45);
   }
-  .field input:focus{ border-color: var(--brass); }
-  .field input::placeholder{ color: var(--linen-faint); }
-
-  .otp-boxes{ display:flex; gap:10px; }
-  .otp-boxes input{ width:52px; height:58px; text-align:center; font-size:22px; font-weight:600; padding:0; }
-
-  hr.hair{ border:none; border-top:1px solid var(--ink-line); margin:18px 0; }
-
-  .toast{
-    position:absolute; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
-    background: var(--linen-2); color:#1A1F26; padding:11px 18px; border-radius:12px;
-    font-size:13px; font-weight:600; opacity:0; transition: all 280ms ease; z-index:200; white-space:nowrap;
-    box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+  .btn-primary::after{
+    content:''; position:absolute; top:0; bottom:0; width:40%; left:-60%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,0.45), transparent);
+    transform: skewX(-18deg); transition: left .8s var(--ease);
   }
-  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .btn-primary:hover::after{ left:120%; }
+  .btn-primary:disabled{ opacity:0.35; pointer-events:none; box-shadow:none; }
+  .btn-pill{ width:auto; padding: 0 28px; height:52px; border-radius:26px; }
+  .btn-outline{ background: transparent; color: var(--brass-light); border:1px solid rgba(212,178,122,0.45); }
+  .btn-sm{ height:46px; font-size:14.5px; border-radius:23px; width:auto; padding: 0 22px; }
 
-  /* ---------- Splash ---------- */
-  .splash{ align-items:center; justify-content:center; text-align:center; padding: 0 40px; }
-  .splash .mono-lg{
-    width:64px; height:64px; border-radius:50%; border:1px solid var(--brass-light);
-    display:flex; align-items:center; justify-content:center; margin: 0 auto 22px;
-    font-family:'Fraunces'; font-style:italic; font-size:30px; color:var(--brass-light);
-    animation: rise 900ms cubic-bezier(.22,.68,0,1);
+  .bar{
+    position:sticky; bottom:0; z-index:20; margin-top:auto;
+    display:flex; align-items:center; gap:16px;
+    padding: 18px 22px calc(18px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgba(16,22,29,0.98) 62%, rgba(16,22,29,0));
   }
-  @keyframes rise{ from{ opacity:0; transform: translateY(14px) scale(0.94);} to{opacity:1; transform:none;} }
-  .splash h1{ font-family:'Fraunces'; font-style:italic; font-weight:500; font-size:34px; margin:0 0 8px; color:var(--linen-2); animation: rise 900ms 80ms cubic-bezier(.22,.68,0,1) backwards;}
-  .splash p{ color: var(--linen-dim); font-size:14.5px; line-height:1.55; margin:0 0 40px; animation: rise 900ms 140ms cubic-bezier(.22,.68,0,1) backwards;}
-  .role-pick{ display:flex; flex-direction:column; gap:12px; width:100%; animation: rise 900ms 220ms cubic-bezier(.22,.68,0,1) backwards;}
-  .role-card{
-    border:1px solid var(--ink-line); background: var(--ink-2); border-radius:16px;
-    padding:16px 18px; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;
-    transition: border-color 150ms ease, background 150ms ease;
-  }
-  .role-card:active{ background: var(--ink-3); }
-  .role-card .ic{ width:38px; height:38px; border-radius:50%; background: var(--brass-dim); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
-  .role-card .ic svg{ width:18px; height:18px; }
-  .role-card .t{ font-size:15px; font-weight:600; color:var(--linen-2);}
-  .role-card .d{ font-size:12.5px; color:var(--linen-faint); margin-top:2px; }
+  .bar .price{ font-size:12.5px; color: var(--linen-faint); white-space:nowrap; }
+  .bar .amt{ font-family: var(--f-display); font-size:24px; color: var(--linen-2); line-height:1.1; }
+  .bar .btn{ flex:1; }
 
-  /* ---------- Sign in ---------- */
-  .signin-body{ padding: 8px 24px 24px; display:flex; flex-direction:column; gap:20px; flex:1; }
-  .signin-hero{ margin: 6px 0 4px; }
-  .signin-hero .kicker{ font-size:12.5px; color: var(--brass-light); font-weight:600; }
-  .signin-hero h2{ font-size:25px; margin: 6px 0 0; color:var(--linen-2); }
-
-  /* ---------- Location screen ---------- */
-  .search-wrap{ padding: 0 22px 14px; }
-  .search-box{
-    display:flex; align-items:center; gap:10px; height:50px; border-radius:14px;
-    background: var(--ink-2); border:1px solid var(--ink-line); padding:0 16px;
+  /* ---------- Inputs ---------- */
+  .field{ display:flex; flex-direction:column; gap:8px; }
+  .field label{ font-size:13.5px; color: var(--linen-dim); font-weight:500; }
+  .input, .tel{
+    height:56px; width:100%; border-radius:16px; border:1px solid var(--line-2);
+    background: rgba(22,30,39,0.85); color: var(--linen-2);
+    transition: border-color .2s ease, box-shadow .2s ease;
   }
-  .search-box svg{ width:16px; height:16px; flex-shrink:0; opacity:0.6;}
-  .search-box input{ flex:1; border:none; background:transparent; color:var(--linen-2); font-size:15px; outline:none; font-family:'Inter';}
-  .search-box input::placeholder{ color: var(--linen-faint); }
-  .chip-row{ display:flex; gap:8px; padding: 12px 22px 2px; overflow-x:auto; }
-  .chip{ flex-shrink:0; padding:7px 13px; border-radius:20px; border:1px solid var(--ink-line); background:var(--ink-2); font-size:12.5px; color:var(--linen-dim); white-space:nowrap; cursor:pointer;}
+  .input{ padding: 0 16px; font: 500 16px var(--f-body); outline:none; }
+  .input::placeholder, .tel input::placeholder{ color: var(--linen-faint); font-weight:400; }
+  .input:focus, .tel:focus-within{ border-color: var(--brass); box-shadow: 0 0 0 4px rgba(176,141,87,0.16); }
+  .tel{ display:flex; align-items:stretch; overflow:hidden; }
+  .tel .cc{
+    display:flex; align-items:center; gap:8px; padding: 0 14px 0 16px; flex-shrink:0;
+    border-right:1px solid var(--line-2); font-weight:600; font-size:16px; color: var(--linen-2);
+    background: rgba(237,231,218,0.03); user-select:none;
+  }
+  .tel .cc svg{ width:22px; height:15px; border-radius:3px; }
+  .tel input{
+    flex:1; min-width:0; border:0; outline:none; background:transparent; color: var(--linen-2);
+    padding: 0 14px; font: 500 17px var(--f-body); letter-spacing:0.06em;
+  }
+  .hint-txt{ font-size:13px; color: var(--linen-faint); line-height:1.55; margin:0; }
+  .textarea{
+    width:100%; min-height:90px; border-radius:14px; border:1px solid var(--line-2);
+    background: rgba(22,30,39,0.85); color: var(--linen-2); padding: 13px 15px;
+    font: 15px/1.5 var(--f-body); resize:vertical; outline:none;
+  }
+  .textarea:focus{ border-color: var(--brass); box-shadow: 0 0 0 4px rgba(176,141,87,0.16); }
+
+  /* ---------- Avatars / portraits ---------- */
+  .avatar{
+    border-radius:50%; overflow:hidden; flex-shrink:0; position:relative;
+    box-shadow: 0 0 0 1.5px rgba(226,201,154,0.7);
+  }
+  .avatar svg, .avatar img{ width:100%; height:100%; display:block; object-fit:cover; }
+  .avatar.initials{ display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-style:italic; color:#1A140A; background: var(--gold); }
+
+  /* ---------- Shared svg animation helpers ---------- */
+  .ping{ transform-box: fill-box; transform-origin: center; animation: ping 2.6s ease-out infinite; }
+  @keyframes ping{ 0%{ transform: scale(.55); opacity:.7; } 80%,100%{ transform: scale(1.7); opacity:0; } }
+  .ecg-run{ stroke-dasharray: .24 .76; animation: run 2.8s linear infinite; }
+  @keyframes run{ from{ stroke-dashoffset: 1; } to{ stroke-dashoffset: 0; } }
+  .draw{ stroke-dasharray:1; stroke-dashoffset:1; animation: draw 2.4s var(--ease) forwards; animation-delay: var(--d, .2s); }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .instant .draw{ animation:none; stroke-dashoffset:0; }
+  .svgt{ font-family: var(--f-body); }
+  .svgd{ font-family: var(--f-display); }
+  @keyframes spin{ to{ transform: rotate(360deg); } }
+  @keyframes bob{ 0%,100%{ transform: translateY(0); } 50%{ transform: translateY(-7px); } }
+  @keyframes beat{ 0%,100%{ transform: scale(1); } 12%{ transform: scale(1.18); } 24%{ transform: scale(1); } 36%{ transform: scale(1.1); } 48%{ transform: scale(1); } }
+
+  /* ================= LANDING ================= */
+  .sc{ position:relative; }
+  .sc > .pin{
+    position:sticky; top: var(--hdrh); height: calc(100svh - var(--hdrh));
+    overflow:hidden; display:flex; flex-direction:column;
+  }
+  #sc-hero{ height: 170svh; }
+  .glow{
+    position:absolute; left:-15%; right:-15%; top:28%; aspect-ratio:1; border-radius:50%; pointer-events:none;
+    background: radial-gradient(closest-side, rgba(212,178,122,0.30), rgba(212,178,122,0.07) 55%, transparent 74%);
+    opacity:.6;
+  }
+  .hero-copy{ position:relative; z-index:3; padding: clamp(14px, 4svh, 40px) 26px 0; text-align:center; will-change: transform, opacity; }
+  .hero-copy h1{
+    margin:0; font-family: var(--f-display); font-weight:300; font-variation-settings:'opsz' 144;
+    font-size: clamp(42px, 12.5vw, 58px); line-height:1.0; letter-spacing:-0.03em;
+    background: linear-gradient(180deg, #FFFBF3 30%, #E6DAC4 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation: screenIn 1.1s var(--ease) both;
+  }
+  .hero-copy p{ margin: 16px auto 0; max-width: 32ch; font-size:16px; line-height:1.55; color: var(--linen-dim); animation: screenIn 1.1s .12s var(--ease) both; }
+  .hero-actions{ margin-top: 22px; display:flex; justify-content:center; animation: screenIn 1.1s .24s var(--ease) both; }
+  .hero-art{ position:relative; z-index:2; flex:1; min-height:0; display:flex; align-items:center; justify-content:center; padding: 8px 0 30px; will-change: transform; }
+  .hero-art .steth{ height:100%; max-height:430px; width:auto; max-width:90%; }
+  .fwrap{ position:absolute; z-index:4; will-change: transform, opacity; }
+  .fcard{
+    display:flex; align-items:center; gap:10px; padding: 9px 14px 9px 9px; border-radius:20px;
+    background: rgba(26,34,44,0.66); border:1px solid var(--line-2);
+    -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    box-shadow: 0 22px 44px -22px rgba(0,0,0,0.8); animation: bob 6s ease-in-out infinite;
+  }
+  .fc-t{ font-size:13px; font-weight:600; color: var(--linen-2); white-space:nowrap; }
+  .fc-s{ font-size:11.5px; color: var(--brass-light); white-space:nowrap; }
+  .okdot{ width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; background: rgba(138,163,145,0.18); border:1px solid rgba(138,163,145,0.5); }
+  .okdot svg{ width:16px; height:16px; stroke: #A9C2B0; }
+  .scroll-hint{ position:absolute; z-index:5; left:24px; bottom:14px; display:flex; flex-direction:column; align-items:flex-start; gap:8px; font-size:12px; color: var(--linen-faint); }
+  .scroll-hint i{ width:1px; height:26px; background: linear-gradient(var(--brass-light), transparent); animation: drip 2s ease-in-out infinite; transform-origin: top; }
+  @keyframes drip{ 0%{ transform: scaleY(0); opacity:1; } 60%{ transform: scaleY(1); opacity:1; } 100%{ transform: scaleY(1); opacity:0; } }
+  .particles span{ position:absolute; z-index:1; opacity:.35; animation: drift 14s ease-in-out infinite; }
+  .particles svg{ width:100%; height:100%; stroke: var(--brass-light); }
+  @keyframes drift{ 0%,100%{ transform: translate(0,0) rotate(0); } 50%{ transform: translate(10px,-22px) rotate(45deg); } }
+  .beat{ transform-box: fill-box; transform-origin:center; animation: beat 1.3s ease-in-out infinite; }
+  .chest-ring{ transform-box: fill-box; transform-origin:center; animation: ping 2.4s ease-out infinite; }
+
+  .sec-h{ margin:0; font-family: var(--f-display); font-weight:400; font-size: clamp(30px, 8.6vw, 38px); line-height:1.08; letter-spacing:-0.02em; color: var(--linen-2); }
+
+  /* pulse scene */
+  #sc-pulse{ height: 240svh; }
+  .pulse-pin{ padding: 34px 24px 26px; justify-content:center; gap: 26px; }
+  .lit .w{ opacity:.14; transition: opacity .3s linear; }
+  .lit .w.on{ opacity:1; }
+  .ecg-wrap{ margin: 0 -24px; }
+  .ecg{ width:100%; height:auto; display:block; }
+  .readout{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; }
+  .bpm{ display:flex; align-items:baseline; gap:8px; }
+  .bpm svg{ width:26px; height:26px; fill: var(--rose); align-self:center; animation: beat 1.3s ease-in-out infinite; }
+  .bpm b, .spo b{ font-family: var(--f-display); font-weight:300; font-size:60px; line-height:1; color: var(--linen-2); font-variant-numeric: tabular-nums; }
+  .bpm span, .spo span{ font-size:13px; color: var(--linen-faint); }
+  .spo{ text-align:right; }
+  .spo b{ font-size:34px; display:block; }
+  .fade-p{ margin:0; font-size:16px; line-height:1.6; color: var(--linen-dim); opacity:0; transform: translateY(12px); transition: opacity .6s var(--ease), transform .6s var(--ease); }
+  .fade-p.on{ opacity:1; transform:none; }
+
+  /* steps scene */
+  #sc-steps{ height: 380svh; }
+  .steps-pin{ padding: 30px 22px 22px; }
+  .stage{ position:relative; margin-top: 22px; height: min(40svh, 320px); overflow:hidden; border-radius:30px; }
+  .ill{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transform: scale(.93); transition: opacity .6s var(--ease), transform .9s var(--ease); }
+  .ill.on{ opacity:1; transform:none; }
+  .ill > svg{ width:100%; height:100%; }
+  .ill .route{ stroke-dasharray:1; stroke-dashoffset:1; transition: stroke-dashoffset 1.4s var(--ease) .3s; }
+  .ill.on .route{ stroke-dashoffset:0; }
+  .ill .chk{ stroke-dasharray:1; stroke-dashoffset:1; transition: stroke-dashoffset .9s var(--ease) .35s; }
+  .ill.on .chk{ stroke-dashoffset:0; }
+  .ill .dg{ opacity:0; transition: opacity .3s ease; }
+  .ill.on .dg{ opacity:1; }
+  .ill .tapripple{ opacity:0; }
+  .ill.on .tapripple{ opacity:1; }
+  .spin-slow{ transform-box: fill-box; transform-origin:center; animation: spin 24s linear infinite; }
+  .stxt{ position:relative; margin-top: 24px; min-height: 104px; }
+  .stxt > div{ position:absolute; inset:0; opacity:0; transform: translateY(12px); transition: opacity .5s var(--ease), transform .6s var(--ease); }
+  .stxt > div.on{ opacity:1; transform:none; }
+  .stxt h3{ margin:0; font-family: var(--f-display); font-weight:400; font-size:26px; color: var(--linen-2); }
+  .stxt p{ margin: 8px 0 0; font-size:15.5px; line-height:1.55; color: var(--linen-dim); max-width: 34ch; }
+  .bars{ margin-top:auto; display:flex; gap:6px; }
+  .bars i{ flex:1; height:3px; border-radius:2px; background: var(--line-2); overflow:hidden; position:relative; }
+  .bars b{ position:absolute; inset:0; background: var(--gold); transform-origin: left; transform: scaleX(0); }
+
+  /* care scene */
+  #sc-care{ height: 210svh; }
+  .care-pin{ padding: 20px 24px 28px; }
+  .helix-wrap{ flex: 1 1 44%; min-height:0; display:flex; align-items:center; justify-content:center; }
+  .helix-wrap svg{ height:100%; max-height:320px; width:auto; }
+  .care-pin .sec-h{ margin-top: 8px; }
+  .assures{ margin-top: 18px; }
+  .assure{ display:flex; align-items:center; gap:14px; padding: 14px 0; border-top: 1px solid var(--line); opacity:0; transform: translateY(12px); transition: opacity .6s var(--ease), transform .7s var(--ease); }
+  .assure.on{ opacity:1; transform:none; }
+  .assure .aic{ width:40px; height:40px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background: var(--brass-dim); border:1px solid rgba(212,178,122,0.25); }
+  .assure .aic svg{ width:18px; height:18px; stroke: var(--brass-light); }
+  .assure span{ font-size:15px; color: var(--linen); line-height:1.4; }
+
+  /* specialties */
+  .specs{ padding: 90px 0 50px; overflow:hidden; }
+  .specs-head{ padding: 0 24px; }
+  .specs-head p{ margin: 12px 0 0; font-size:16px; line-height:1.6; color: var(--linen-dim); max-width:34ch; }
+  .track{ display:flex; gap:14px; padding: 30px 24px 6px; will-change: transform; }
+  .tile{ flex: 0 0 214px; padding: 20px; border-radius:26px; position:relative; overflow:hidden; }
+  .tile .ticon{ width:58px; height:58px; border-radius:18px; display:flex; align-items:center; justify-content:center; background: rgba(9,13,18,0.5); border:1px solid var(--line-2); }
+  .tile .ticon svg{ width:30px; height:30px; }
+  .tile h4{ margin: 22px 0 0; font-family: var(--f-display); font-weight:400; font-size:21px; line-height:1.2; color: var(--linen-2); }
+  .tile .tdoc{ display:flex; align-items:center; gap:10px; margin-top:16px; }
+  .tile .tdoc div{ font-size:13px; color: var(--linen-dim); line-height:1.3; }
+  .tile .tdoc b{ display:block; color: var(--brass-light); font-weight:500; font-size:12.5px; }
+  .tile::before{ content:''; position:absolute; right:-40px; top:-40px; width:140px; height:140px; border-radius:50%; background: radial-gradient(closest-side, var(--tint), transparent); opacity:.28; }
+
+  /* choose */
+  .choose{ padding: 40px 22px 20px; }
+  .choose .sec-h{ margin-bottom: 22px; }
+  .role{
+    width:100%; display:flex; align-items:center; gap:16px; padding: 18px 16px 18px 18px; margin-bottom:12px;
+    border-radius:24px; transition: border-color .25s ease, transform .15s ease;
+  }
+  .role:hover{ border-color: rgba(212,178,122,0.5); }
+  .role:active{ transform: scale(0.99); }
+  .role .ric{ width:50px; height:50px; border-radius:50%; flex-shrink:0; padding:1px; background: var(--gold); }
+  .role .ric span{ width:100%; height:100%; border-radius:50%; background: var(--ink-2); display:flex; align-items:center; justify-content:center; }
+  .role .ric svg{ width:22px; height:22px; stroke: var(--brass-light); }
+  .role .rt{ font-size:16px; font-weight:600; color: var(--linen-2); line-height:1.3; }
+  .role .rd{ font-size:13.5px; color: var(--linen-faint); margin-top:3px; }
+  .role .go{ margin-left:auto; width:18px; height:18px; stroke: var(--linen-faint); flex-shrink:0; }
+  .foot{ padding: 36px 22px calc(40px + env(safe-area-inset-bottom)); display:flex; align-items:center; gap:10px; color: var(--linen-faint); font-size:13px; border-top:1px solid var(--line); margin-top: 30px; }
+
+  /* ================= INNER SCREENS ================= */
+  .search-box{ display:flex; align-items:center; gap:10px; height:54px; border-radius:16px; background: rgba(22,30,39,0.85); border:1px solid var(--line-2); padding: 0 16px; }
+  .search-box:focus-within{ border-color: var(--brass); }
+  .search-box svg{ width:17px; height:17px; stroke: var(--linen-faint); flex-shrink:0; }
+  .search-box input{ flex:1; min-width:0; border:none; background:transparent; color: var(--linen-2); font: 16px var(--f-body); outline:none; }
+  .chip-row{ display:flex; gap:8px; overflow-x:auto; margin: 0 -22px; padding: 0 22px; scrollbar-width:none; }
+  .chip-row::-webkit-scrollbar{ display:none; }
+  .chip{ flex-shrink:0; padding: 8px 14px; border-radius:20px; border:1px solid var(--line-2); background: rgba(22,30,39,0.8); font-size:13px; color: var(--linen-dim); white-space:nowrap; }
   .chip.on{ border-color: var(--brass); color: var(--brass-light); background: var(--brass-dim); }
 
-  .map-panel{ margin: 14px 22px 0; border-radius: 20px; overflow:hidden; border:1px solid var(--ink-line); position:relative; background:#0E1319; height:210px; }
-  .map-panel svg{ width:100%; height:100%; display:block; }
-  .map-pin{ cursor:pointer; }
-  .map-pin circle.pulse{ animation: pulse 2.4s ease-out infinite; transform-origin:center; }
-  @keyframes pulse{ 0%{ opacity:0.5; transform:scale(0.6);} 70%{opacity:0;} 100%{opacity:0;} }
+  .map-panel{ position:relative; height:240px; border-radius:24px; overflow:hidden; border:1px solid var(--line-2); background:#0C1117; }
+  .map-panel > svg{ width:100%; height:100%; display:block; }
   #townmap{ touch-action:none; cursor:grab; }
   #townmap:active{ cursor:grabbing; }
-  .map-controls{
-    position:absolute; top:12px; right:12px; display:flex; flex-direction:column;
-    border-radius:11px; overflow:hidden; border:1px solid var(--ink-line);
-  }
-  .map-controls div{
-    width:32px; height:32px; display:flex; align-items:center; justify-content:center;
-    background: rgba(18,24,31,0.88); backdrop-filter:blur(4px); color:var(--linen-2);
-    font-size:17px; font-weight:600; cursor:pointer; user-select:none; line-height:1;
-  }
-  .map-controls div:first-child{ border-bottom:1px solid var(--ink-line); }
-  .map-controls div:active{ background: rgba(176,141,87,0.35); }
-  .map-badge{
-    position:absolute; left:14px; bottom:12px; background:rgba(18,24,31,0.85); backdrop-filter:blur(4px);
-    border:1px solid var(--ink-line); border-radius:11px; padding:7px 11px; font-size:11.5px; color:var(--linen-dim); display:flex; align-items:center; gap:6px;
-  }
+  .map-pin{ cursor:pointer; }
+  .map-controls{ position:absolute; top:12px; right:12px; display:flex; flex-direction:column; border-radius:12px; overflow:hidden; border:1px solid var(--line-2); }
+  .map-controls button{ width:36px; height:36px; display:flex; align-items:center; justify-content:center; background: rgba(16,22,29,0.88); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); color: var(--linen-2); font-size:18px; font-weight:500; border:0; cursor:pointer; }
+  .map-controls button:first-child{ border-bottom:1px solid var(--line-2); }
+  .map-badge{ position:absolute; left:12px; bottom:12px; display:flex; align-items:center; gap:6px; padding: 7px 12px; border-radius:12px; font-size:12px; color: var(--linen-dim); background: rgba(16,22,29,0.85); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border:1px solid var(--line-2); }
+  .map-badge svg{ width:13px; height:13px; stroke: var(--brass-light); }
 
-  .list-label{ padding: 20px 22px 8px; display:flex; align-items:baseline; justify-content:space-between; }
-  .list-label h3{ font-family:'Fraunces'; font-weight:500; font-size:17px; margin:0; color: var(--linen-2); }
-  .list-label span{ font-size:12px; color: var(--linen-faint); }
+  .list-label{ display:flex; align-items:baseline; justify-content:space-between; margin-top:8px; }
+  .list-label h3{ margin:0; font-family: var(--f-display); font-weight:400; font-size:22px; color: var(--linen-2); }
+  .list-label span{ font-size:13px; color: var(--linen-faint); }
+  .stack{ display:flex; flex-direction:column; gap:12px; }
 
-  .clinic-list{ padding: 0 22px 26px; display:flex; flex-direction:column; gap:12px; }
-  .clinic-card{
-    border:1px solid var(--ink-line); border-radius:17px; padding:15px 16px; background: var(--ink-2);
-    display:flex; gap:13px; cursor:pointer; transition: border-color 150ms ease;
-  }
-  .clinic-card:active{ border-color: var(--brass); }
-  .clinic-card .dot{
-    width:44px; height:44px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces'; font-style:italic; font-size:16px; color:#1A140A;
-  }
-  .clinic-card .body{ flex:1; min-width:0; }
-  .clinic-card .name{ font-size:15px; font-weight:600; color:var(--linen-2); }
-  .clinic-card .meta{ font-size:12.5px; color:var(--linen-faint); margin-top:3px; }
-  .clinic-card .row2{ display:flex; align-items:center; gap:10px; margin-top:9px; font-size:11.5px; color:var(--linen-dim); }
-  .status-dot{ width:7px; height:7px; border-radius:50%; background:var(--sage); display:inline-block; margin-right:5px;}
+  .ccard{ width:100%; display:flex; gap:14px; padding:16px; border-radius:22px; transition: border-color .2s ease; }
+  .ccard:hover{ border-color: rgba(212,178,122,0.45); }
+  .ccard .cic{ width:50px; height:50px; border-radius:15px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .ccard .cic svg{ width:26px; height:26px; }
+  .ccard .cb{ flex:1; min-width:0; }
+  .ccard .cn{ font-size:16px; font-weight:600; color: var(--linen-2); line-height:1.3; }
+  .ccard .cm{ font-size:13px; color: var(--linen-faint); margin-top:3px; line-height:1.4; }
+  .ccard .cr{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 12px; margin-top:10px; font-size:12.5px; color: var(--linen-dim); }
+  .status-dot{ width:7px; height:7px; border-radius:50%; background: var(--sage); display:inline-block; margin-right:6px; box-shadow: 0 0 0 3px rgba(138,163,145,0.2); }
 
-  /* ---------- Clinic detail / doctor list ---------- */
-  .doctor-card{
-    border:1px solid var(--ink-line); border-radius:18px; padding:16px; background: var(--ink-2);
-    display:flex; gap:14px; cursor:pointer; align-items:center;
-  }
-  .avatar{
-    width:56px; height:56px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces'; font-style:italic; font-size:19px; color:#fff; position:relative; overflow:hidden;
-    border: 1.5px solid var(--brass-light);
-  }
-  .avatar img{ width:100%; height:100%; object-fit:cover; }
-  .doctor-card .name{ font-size:15.5px; font-weight:600; color:var(--linen-2); }
-  .doctor-card .spec{ font-size:12.5px; color: var(--brass-light); margin-top:2px; }
-  .doctor-card .bio{ font-size:12px; color: var(--linen-faint); margin-top:5px; line-height:1.4; }
+  .dcard{ width:100%; display:flex; gap:16px; align-items:center; padding:16px; border-radius:24px; transition: border-color .2s ease; }
+  .dcard:hover{ border-color: rgba(212,178,122,0.45); }
+  .dcard .dn{ font-size:16.5px; font-weight:600; color: var(--linen-2); }
+  .dcard .ds{ font-size:13px; color: var(--brass-light); margin-top:2px; }
+  .dcard .db{ font-size:13px; color: var(--linen-faint); margin-top:6px; line-height:1.45; }
+  .dcard .df{ display:flex; gap:12px; margin-top:10px; font-size:12.5px; color: var(--linen-dim); }
 
-  /* ---------- Doctor / booking screen ---------- */
-  .doctor-hero{ padding: 54px 22px 18px; display:flex; gap:16px; align-items:center; }
-  .doctor-hero .avatar{ width:72px; height:72px; font-size:24px; }
-  .doctor-hero h2{ font-size:20px; margin:0; color:var(--linen-2); }
-  .doctor-hero .spec{ font-size:13px; color: var(--brass-light); margin-top:3px; }
-  .doctor-hero .clinic{ font-size:12px; color: var(--linen-faint); margin-top:5px; }
+  .dhero{ display:flex; flex-direction:column; align-items:center; text-align:center; padding: 16px 22px 4px; }
+  .dring{ position:relative; width:128px; height:128px; border-radius:50%; padding:4px; }
+  .dring::before{ content:''; position:absolute; inset:0; border-radius:50%; background: conic-gradient(from 0deg, #F3E2BD, #8A6B3F, #D4B27A, #5E4A2C, #F3E2BD); animation: spin 9s linear infinite; }
+  .dring::after{ content:''; position:absolute; inset:-18px; border-radius:50%; background: radial-gradient(closest-side, rgba(212,178,122,0.25), transparent); z-index:-1; }
+  .dring .avatar{ position:relative; width:120px; height:120px; box-shadow: 0 0 0 3px var(--ink); }
+  .dhero h1{ margin: 18px 0 0; font-family: var(--f-display); font-weight:400; font-size:30px; line-height:1.15; letter-spacing:-0.015em; color: var(--linen-2); }
+  .dhero .dspec{ font-size:14.5px; color: var(--brass-light); margin-top:4px; }
+  .dhero .dclinic{ font-size:13.5px; color: var(--linen-faint); margin-top:2px; }
+  .facts{ display:flex; gap:8px; margin-top:14px; }
+  .facts span{ display:flex; align-items:center; gap:6px; padding: 6px 12px; border-radius:20px; font-size:13px; color: var(--linen-dim); border:1px solid var(--line-2); background: rgba(237,231,218,0.04); }
+  .facts svg{ width:14px; height:14px; stroke: var(--brass-light); }
+  .dbio{ margin: 14px 0 0; font-size:14.5px; line-height:1.6; color: var(--linen-dim); text-align:center; }
 
-  .section-title{ padding: 18px 22px 10px; font-size:12.5px; color: var(--linen-dim); font-weight:600; }
-  .date-strip{ display:flex; gap:10px; padding: 0 22px 4px; overflow-x:auto; }
-  .date-pill{
-    flex-shrink:0; width:56px; padding:10px 0; border-radius:14px; text-align:center; cursor:pointer;
-    border:1px solid var(--ink-line); background: var(--ink-2);
-  }
-  .date-pill .d{ font-size:10.5px; color:var(--linen-faint); }
-  .date-pill .n{ font-size:17px; font-weight:600; margin-top:3px; color:var(--linen-2); }
-  .date-pill.on{ background: linear-gradient(180deg, var(--brass-light), var(--brass)); border-color:transparent; }
+  .sect{ font-size:13.5px; font-weight:600; color: var(--linen-dim); margin-bottom:-6px; }
+  .date-strip{ display:flex; gap:10px; overflow-x:auto; margin: 0 -22px; padding: 2px 22px 4px; scrollbar-width:none; }
+  .date-strip::-webkit-scrollbar{ display:none; }
+  .date-pill{ flex-shrink:0; width:62px; padding: 11px 0; border-radius:18px; text-align:center; border:1px solid var(--line-2); background: rgba(22,30,39,0.8); transition: background .2s ease; }
+  .date-pill .d{ font-size:11.5px; color: var(--linen-faint); }
+  .date-pill .n{ font-size:20px; font-weight:600; margin-top:2px; color: var(--linen-2); font-family: var(--f-display); }
+  .date-pill.on{ background: var(--gold); border-color:transparent; box-shadow: 0 10px 24px -12px rgba(212,178,122,0.7); }
   .date-pill.on .d, .date-pill.on .n{ color:#1A140A; }
+  .dur-note{ display:flex; align-items:center; gap:8px; font-size:13px; color: var(--linen-faint); }
+  .dur-note svg{ width:14px; height:14px; stroke: var(--brass-light); }
+  .slot-grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; }
+  .slot{ padding: 13px 0; text-align:center; border-radius:14px; border:1px solid var(--line-2); background: rgba(22,30,39,0.8); font-size:14px; color: var(--linen-2); font-variant-numeric: tabular-nums; transition: background .2s ease; }
+  .slot:disabled{ opacity:0.28; text-decoration: line-through; cursor:default; }
+  .slot.on{ background: var(--gold); color:#1A140A; border-color:transparent; font-weight:600; box-shadow: 0 10px 24px -12px rgba(212,178,122,0.7); }
+  .empty{ padding: 18px; border-radius:18px; border:1px dashed var(--line-2); font-size:14px; color: var(--linen-dim); text-align:center; }
 
-  .duration-note{ margin:14px 22px 0; display:flex; align-items:center; gap:8px; font-size:12px; color:var(--linen-faint); }
-  .duration-note svg{ width:13px; height:13px; opacity:0.7; }
+  .summary{ padding: 20px; }
+  .summary .sh{ display:flex; align-items:center; gap:14px; padding-bottom:16px; margin-bottom:6px; border-bottom:1px solid var(--line); }
+  .summary .sh .n{ font-size:16.5px; font-weight:600; color: var(--linen-2); }
+  .summary .sh .s{ font-size:13px; color: var(--brass-light); }
+  .summary .row{ display:flex; justify-content:space-between; gap:16px; padding: 9px 0; font-size:14px; color: var(--linen-faint); }
+  .summary .row b{ color: var(--linen-2); font-weight:500; text-align:right; }
 
-  .slot-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; padding: 12px 22px 10px; }
-  .slot{
-    padding:12px 0; text-align:center; border-radius:12px; border:1px solid var(--ink-line);
-    background: var(--ink-2); font-size:13.5px; color:var(--linen-2); cursor:pointer;
-  }
-  .slot.taken{ opacity:0.32; text-decoration: line-through; pointer-events:none; }
-  .slot.on{ background: linear-gradient(180deg, var(--brass-light), var(--brass)); color:#1A140A; border-color:transparent; font-weight:600; }
+  .otp-art{ height:170px; display:flex; align-items:center; justify-content:center; }
+  .otp-art svg{ height:100%; width:auto; }
+  .otp-boxes{ display:flex; gap:12px; justify-content:center; }
+  .otp-boxes input{ width:60px; height:66px; text-align:center; font: 600 26px var(--f-display); padding:0; }
+  .link{ color: var(--brass-light); font-weight:600; background:none; border:0; cursor:pointer; padding:0; font-size:inherit; }
 
-  .book-bar{
-    padding: 14px 22px 26px; border-top:1px solid var(--ink-line); background: var(--ink);
-    display:flex; align-items:center; gap:14px; flex-shrink:0;
-  }
-  .book-bar .price{ font-size:12px; color:var(--linen-faint); }
-  .book-bar .amt{ font-family:'Fraunces'; font-size:19px; color:var(--linen-2); }
-  .book-bar .btn{ flex:1; }
+  .success-body{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 30px 24px 40px; gap:0; }
+  .okwrap{ position:relative; width:110px; height:110px; margin-bottom:28px; }
+  .okwrap .okr{ position:absolute; inset:0; border-radius:50%; border:1.5px solid rgba(138,163,145,0.6); animation: ping 2.6s ease-out infinite; }
+  .okwrap .okr.r2{ animation-delay: 1.3s; }
+  .okwrap .okc{ position:absolute; inset:14px; border-radius:50%; display:flex; align-items:center; justify-content:center; background: radial-gradient(circle at 35% 30%, #A9C2B0, #5F7E68); box-shadow: 0 18px 40px -14px rgba(138,163,145,0.7); animation: screenIn .8s var(--ease); }
+  .okwrap svg{ width:38px; height:38px; }
+  .okwrap path{ stroke:#0F1A13; stroke-width:2.6; fill:none; stroke-linecap:round; stroke-linejoin:round; }
+  .success-body h1{ margin:0; font-family: var(--f-display); font-weight:400; font-size:36px; letter-spacing:-0.02em; color: var(--linen-2); }
+  .success-body > p{ margin: 12px 0 24px; font-size:15px; line-height:1.6; color: var(--linen-dim); max-width:32ch; }
+  .success-body .summary{ width:100%; text-align:left; margin-bottom: 26px; }
+  .ecg-strip{ width:100%; height:50px; margin: -6px 0 18px; }
 
-  /* ---------- Confirm screen ---------- */
-  .confirm-summary{
-    margin: 18px 22px 0; border-radius:18px; border:1px solid var(--ink-line); background: var(--ink-2); padding:18px;
-  }
-  .confirm-summary .row{ display:flex; justify-content:space-between; font-size:13px; padding:7px 0; color: var(--linen-dim); }
-  .confirm-summary .row b{ color: var(--linen-2); font-weight:600; }
-
-  /* ---------- Success ---------- */
-  .success{ align-items:center; justify-content:center; text-align:center; padding: 0 40px; }
-  .check-ring{
-    width:74px; height:74px; border-radius:50%; border:1.5px solid var(--sage); display:flex; align-items:center; justify-content:center; margin: 0 auto 24px;
-    animation: rise 700ms cubic-bezier(.22,.68,0,1);
-  }
-  .check-ring svg{ width:28px; height:28px; }
-  .success h2{ font-family:'Fraunces'; font-weight:500; font-size:24px; margin:0 0 10px; color:var(--linen-2); }
-  .success p{ color:var(--linen-dim); font-size:14px; line-height:1.6; margin:0 0 30px; }
-
-  /* ---------- Admin ---------- */
-  .admin-topbar{ padding: 54px 22px 16px; display:flex; align-items:center; justify-content:space-between; }
-  .admin-topbar .who{ display:flex; align-items:center; gap:11px; }
-  .admin-topbar .name{ font-size:15px; font-weight:600; color:var(--linen-2); }
-  .admin-topbar .clinic{ font-size:12px; color:var(--linen-faint); }
-  .signout{ font-size:12px; color: var(--linen-faint); border:1px solid var(--ink-line); border-radius:10px; padding:7px 11px; cursor:pointer; background:var(--ink-2);}
-
-  .admin-doc-select{ display:flex; gap:9px; padding: 4px 22px 4px; }
-  .admin-doc-chip{ flex:1; padding:10px 8px; border-radius:13px; border:1px solid var(--ink-line); background:var(--ink-2); text-align:center; cursor:pointer; }
-  .admin-doc-chip.on{ border-color:var(--brass); background: var(--brass-dim); }
-  .admin-doc-chip .n{ font-size:12.5px; font-weight:600; color:var(--linen-2); }
-
-  .panel{ margin: 16px 22px 0; border-radius:18px; border:1px solid var(--ink-line); background: var(--ink-2); padding:18px; }
-  .panel h4{ font-family:'Fraunces'; font-weight:500; font-size:15px; margin:0 0 14px; color:var(--linen-2); }
-  .photo-row{ display:flex; align-items:center; gap:16px; margin-bottom:16px; }
-  .photo-row .avatar{ width:60px; height:60px; font-size:20px; }
-  .upload-btn{ font-size:12px; color: var(--brass-light); border:1px dashed rgba(176,141,87,0.5); border-radius:11px; padding:9px 13px; cursor:pointer; background:transparent;}
-  .textarea{ width:100%; min-height:70px; border-radius:12px; border:1px solid var(--ink-line); background: var(--ink-3); color:var(--linen-2); padding:12px 14px; font-family:'Inter'; font-size:13.5px; resize:none; outline:none; }
-  .textarea:focus{ border-color:var(--brass); }
-
-  .duration-row{ display:flex; gap:9px; }
-  .dur-chip{ flex:1; text-align:center; padding:12px 0; border-radius:12px; border:1px solid var(--ink-line); background:var(--ink-3); cursor:pointer; }
-  .dur-chip .n{ font-size:16px; font-weight:700; color:var(--linen-2); }
-  .dur-chip .u{ font-size:10.5px; color:var(--linen-faint); }
-  .dur-chip.on{ background: linear-gradient(180deg, var(--brass-light), var(--brass)); border-color:transparent; }
+  .admin-who{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 18px 22px 0; }
+  .admin-who .w{ display:flex; align-items:center; gap:12px; }
+  .admin-who .n{ font-size:16px; font-weight:600; color: var(--linen-2); }
+  .admin-who .c{ font-size:13px; color: var(--linen-faint); }
+  .signout{ padding: 8px 14px; border-radius:20px; font-size:13px; color: var(--linen-dim); border:1px solid var(--line-2); background: rgba(237,231,218,0.04); cursor:pointer; white-space:nowrap; }
+  .seg{ display:flex; gap:8px; }
+  .seg button{ flex:1; padding: 12px 6px; border-radius:16px; border:1px solid var(--line-2); background: rgba(22,30,39,0.8); font-size:13.5px; font-weight:600; color: var(--linen-2); cursor:pointer; }
+  .seg button.on{ border-color: var(--brass); background: var(--brass-dim); color: var(--brass-light); }
+  .panel{ padding: 20px; }
+  .panel h4{ margin: 0 0 16px; font-family: var(--f-display); font-weight:400; font-size:20px; color: var(--linen-2); }
+  .panel .note{ font-size:12.5px; color: var(--linen-faint); margin: -8px 0 16px; }
+  .photo-row{ display:flex; align-items:center; gap:16px; margin-bottom:18px; }
+  .upload-btn{ display:inline-flex; align-items:center; gap:8px; font-size:13.5px; color: var(--brass-light); border:1px dashed rgba(212,178,122,0.5); border-radius:14px; padding: 10px 14px; cursor:pointer; }
+  .upload-btn svg{ width:16px; height:16px; stroke: var(--brass-light); }
+  .dur-row{ display:flex; gap:10px; }
+  .dur-chip{ flex:1; text-align:center; padding: 12px 0; border-radius:16px; border:1px solid var(--line-2); background: rgba(22,30,39,0.8); cursor:pointer; }
+  .dur-chip .n{ font-family: var(--f-display); font-size:22px; color: var(--linen-2); }
+  .dur-chip .u{ font-size:12px; color: var(--linen-faint); }
+  .dur-chip.on{ background: var(--gold); border-color: transparent; }
   .dur-chip.on .n, .dur-chip.on .u{ color:#1A140A; }
-
-  .save-bar{ padding: 20px 22px 30px; }
-
   .fee-row{ display:flex; align-items:center; gap:14px; }
-  .fee-amt{ font-family:'Fraunces'; font-size:18px; color:var(--brass-light); min-width:56px; text-align:right; }
-  .fee-scale{ display:flex; justify-content:space-between; margin-top:6px; font-size:10.5px; color:var(--linen-faint); }
-  input[type="range"]{
-    -webkit-appearance:none; appearance:none; flex:1; height:4px; border-radius:2px;
-    background: linear-gradient(90deg, var(--brass), var(--ink-line));
-    outline:none;
-  }
-  input[type="range"]::-webkit-slider-thumb{
-    -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%;
-    background: linear-gradient(180deg, var(--brass-light), var(--brass));
-    border:2px solid #0E1319; cursor:pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-  }
-  input[type="range"]::-moz-range-thumb{
-    width:20px; height:20px; border-radius:50%; border:2px solid #0E1319;
-    background: linear-gradient(180deg, var(--brass-light), var(--brass)); cursor:pointer;
-  }
+  .fee-amt{ font-family: var(--f-display); font-size:24px; color: var(--brass-light); min-width:64px; text-align:right; }
+  .fee-scale{ display:flex; justify-content:space-between; margin-top:6px; font-size:12px; color: var(--linen-faint); }
+  input[type="range"]{ -webkit-appearance:none; appearance:none; flex:1; height:4px; border-radius:2px; background: linear-gradient(90deg, var(--brass) var(--fill, 50%), var(--line-2) var(--fill, 50%)); outline:none; }
+  input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:24px; height:24px; border-radius:50%; background: var(--gold); border:3px solid var(--ink); cursor:pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
+  input[type="range"]::-moz-range-thumb{ width:20px; height:20px; border-radius:50%; background: #D4B27A; border:3px solid var(--ink); cursor:pointer; }
 
-  .homeindicator{ position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:134px; height:5px; border-radius:3px; background: rgba(237,231,218,0.35); z-index:60;}
+  /* ---------- Indic scripts need more vertical room and no faux italics ---------- */
+  :lang(hi) .hero-copy h1, :lang(or) .hero-copy h1{ line-height:1.22; letter-spacing:-0.01em; font-size: clamp(36px, 10.5vw, 48px); padding-bottom:4px; }
+  :lang(hi) .sec-h, :lang(or) .sec-h, :lang(hi) .ptitle h1, :lang(or) .ptitle h1,
+  :lang(hi) .dhero h1, :lang(or) .dhero h1, :lang(hi) .success-body h1, :lang(or) .success-body h1{ line-height:1.3; letter-spacing:0; }
+  :lang(hi) .ptitle h1, :lang(or) .ptitle h1{ font-size:30px; }
+  :lang(hi) .stxt, :lang(or) .stxt{ min-height:120px; }
 
-  ::selection{ background: var(--brass); color:#1A140A; }
+  @media (min-width: 441px){
+    .app{ box-shadow: 0 0 0 1px rgba(237,231,218,0.04); }
+  }
+  @media (max-height: 700px){
+    .hero-copy p{ font-size:15px; margin-top:10px; }
+    .hero-actions{ margin-top:16px; }
+    .stage{ height: 34svh; }
+    .bpm b{ font-size:48px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+    .draw{ stroke-dashoffset:0; }
+    .rv{ opacity:1; transform:none; }
+  }
 </style>
 </head>
 <body>
 
-<div class="stage">
-  <div class="brand-mark"><span class="mono">A</span><span>Auria</span></div>
-
-  <div class="phone" id="phone">
-    <div class="notch"></div>
-    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;Auria</span></div>
-    <div class="screens" id="screens"></div>
-    <div class="homeindicator"></div>
-    <div class="toast" id="toast"></div>
-  </div>
+<div class="app" id="app">
+  <header class="hdr" id="hdr">
+    <button class="tap iconbtn" id="hdr-back" aria-label="Back" hidden><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+    <button class="tap brand" id="hdr-brand" aria-label="Auria home"><span class="mono"><span>A</span></span><span class="word">Auria</span></button>
+    <div class="spacer"></div>
+    <div class="lang">
+      <button class="tap lang-btn" id="lang-btn" aria-haspopup="listbox" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.8 3.9 5.8 3.9 9s-1.3 6.2-3.9 9M12 3C9.4 5.8 8.1 8.8 8.1 12s1.3 6.2 3.9 9"/></svg>
+        <span id="lang-cur">English</span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="lang-menu" id="lang-menu" role="listbox" hidden></div>
+    </div>
+  </header>
+  <main id="screens"></main>
 </div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<!-- icon defs -->
-<svg width="0" height="0" style="position:absolute">
-<symbol id="ic-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></symbol>
-<symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
-<symbol id="ic-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
-<symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></symbol>
-<symbol id="ic-clinic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 21V8l6-4 6 4v13"/><path d="M12 21v-6"/><path d="M9 10h.01M15 10h.01"/></symbol>
-<symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></symbol>
-<symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></symbol>
-<symbol id="ic-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><circle cx="12" cy="13" r="4"/></symbol>
+<!-- shared svg defs + icons -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="gGold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F6E7C6"/><stop offset=".42" stop-color="#D4B27A"/><stop offset=".7" stop-color="#B08D57"/><stop offset="1" stop-color="#7E6238"/>
+    </linearGradient>
+    <radialGradient id="gGoldR" cx="35%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#FBF0D6"/><stop offset=".45" stop-color="#D4B27A"/><stop offset="1" stop-color="#6F5530"/>
+    </radialGradient>
+    <linearGradient id="gTube" x1="60" y1="150" x2="250" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#46525F"/><stop offset=".5" stop-color="#1E262F"/><stop offset="1" stop-color="#394552"/>
+    </linearGradient>
+    <radialGradient id="gDia" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#2A3744"/><stop offset="1" stop-color="#090D12"/>
+    </radialGradient>
+    <pattern id="pGrid" width="18" height="18" patternUnits="userSpaceOnUse">
+      <path d="M18 0H0V18" fill="none" stroke="rgba(237,231,218,0.05)"/>
+    </pattern>
+    <filter id="fSoft"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+  <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+  <symbol id="ic-pin" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></symbol>
+  <symbol id="ic-clinic" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V9l7-5 7 5v12"/><path d="M12 9v5M9.5 11.5h5"/><path d="M10 21v-3h4v3"/></symbol>
+  <symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="ic-camera" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><circle cx="12" cy="13" r="4"/></symbol>
+  <symbol id="ic-chev-r" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></symbol>
+  <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14.5v2.5"/></symbol>
+  <symbol id="ic-rupee" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12M6 9h12M9 4c4.5 0 6 2 6 5s-2.5 5-6 5H7l8 7"/></symbol>
+  <symbol id="ic-heart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.3 3.2 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.8 0 5.9 3.8 4.5 7.2C19.5 16.4 12 21 12 21z"/></symbol>
 </svg>
-
 <script>
 (function(){
   "use strict";
 
-  // ---------------- persistence ----------------
-  function loadState(){
-    try{
-      var raw = localStorage.getItem('auria-demo-state');
-      if(raw) return JSON.parse(raw);
-    }catch(e){}
-    return null;
-  }
-  function persist(){
-    try{ localStorage.setItem('auria-demo-state', JSON.stringify({ doctors: DATA.doctors })); }catch(e){}
-  }
+  /* =========================================================
+     TRANSLATIONS
+     ========================================================= */
+  var LANGS = [
+    { code:'en', name:'English',  sub:'English' },
+    { code:'hi', name:'हिन्दी',    sub:'Hindi' },
+    { code:'or', name:'ଓଡ଼ିଆ',     sub:'Odia' }
+  ];
 
-  // ---------------- data ----------------
+  var I18N = {
+    en: {
+      hero_title:'Care, on your time.',
+      hero_sub:'Book trusted doctors in Balangir in under a minute. No queues, no phone calls.',
+      hero_cta:'Book an appointment',
+      scroll_hint:'Scroll to explore',
+      appt_confirmed:'Appointment confirmed',
+      today_at:'Today, {time}',
+      pulse_title:'Every heartbeat deserves unhurried attention.',
+      pulse_body:'Auria connects you with specialists near you and shows their real availability before you leave home.',
+      steps_title:'Four steps to your doctor.',
+      step1_t:'Find a clinic', step1_d:'See clinics around you on a live town map.',
+      step2_t:'Choose your doctor', step2_d:'Read each doctor\u2019s speciality, experience and fee.',
+      step3_t:'Pick a time', step3_d:'Open slots update as the day fills up.',
+      step4_t:'Confirm with a code', step4_d:'A one-time code sent to your +91 number secures the booking.',
+      care_title:'Care that fits the way you live.',
+      assure1:'Your number stays private',
+      assure2:'Fees shown before you book, paid at the clinic',
+      assure3:'Real availability, updated through the day',
+      spec_title:'Specialists who know Balangir.',
+      spec_body:'From everyday check-ups to heart care, across three neighbourhood clinics.',
+      fee_from:'Consultation \u20b9{n}',
+      choose_title:'How would you like to continue?',
+      role_patient_t:'Book an appointment', role_patient_d:'Find a clinic and reserve a time',
+      role_clinic_t:'I manage a clinic', role_clinic_d:'Update doctors, slots and fees',
+      footer:'Made for Balangir, Odisha',
+      back:'Back', language:'Language',
+
+      signin_patient_h:'Let\u2019s find your next appointment',
+      patient_access:'Sign in with your mobile number to book.',
+      mobile:'Mobile number', mobile_ph:'10-digit number',
+      fullname:'Full name', fullname_ph:'As it appears on your records',
+      continue:'Continue',
+      err_mobile:'Enter a valid 10-digit mobile number',
+
+      signin_clinic_h:'Manage your practice',
+      clinic_admin:'Administrator sign-in for {clinic}',
+      work_email:'Work email', password:'Password',
+      signin_console:'Sign in to console',
+      signed_in:'Signed in to {clinic}',
+
+      find_clinic:'Find a clinic',
+      near:'Near {loc}',
+      default_loc:'Balangir, Odisha, India',
+      enter_location:'Enter a location',
+      chip_all:'All specialities', chip_today:'Available today', chip_2km:'Within 2 km', chip_top:'Top rated',
+      clinics_in:'{n} clinics in Balangir',
+      clinics_near:'Clinics near you',
+      results:'{n} results',
+      doctors_n:'{n} doctors', doctors_1:'1 doctor',
+      open_now:'Open now',
+      from_slots:'Slots from {n} min',
+      pinch_hint:'Drag to move. Use + and \u2212 to zoom.',
+
+      available_doctors:'Available doctors',
+      select_date:'Select a date',
+      dur_note:'{n}-minute consultation, set by the clinic',
+      available_times:'Available times',
+      no_slots:'No open times on this day. Try another date.',
+      fee:'Consultation fee',
+      book_time:'Book {time}',
+      choose_time:'Choose a time',
+      min:'min',
+
+      confirm_booking:'Confirm your booking',
+      confirm_sub:'Check the details, then verify your number.',
+      doctor:'Doctor', clinic:'Clinic', date:'Date', time:'Time', fee_short:'Fee',
+      payable:'\u20b9{n}, pay at clinic',
+      otp_note:'We\u2019ll text a one-time code to confirm this booking is really you.',
+      send_code:'Send confirmation code',
+      demo_code:'Demo code: 4821',
+
+      enter_code:'Enter the code',
+      sent_to:'Sent to {m}',
+      no_code:'Didn\u2019t get it?',
+      resend:'Resend code',
+      confirm_appt:'Confirm appointment',
+      err_otp_short:'Enter all 4 digits',
+      err_otp_wrong:'That code doesn\u2019t match. Use the demo code 4821.',
+
+      booked:'You\u2019re booked',
+      booked_body:'A confirmation has been sent to {m}. Please arrive 10 minutes early.',
+      back_start:'Back to start',
+
+      admin_console:'Administrator console',
+      signout:'Sign out',
+      doctor_profile:'Doctor profile',
+      edit_note:'You\u2019re editing the English version.',
+      upload_photo:'Upload photo',
+      speciality:'Speciality',
+      bio_label:'Bio shown to patients',
+      slot_length:'Appointment slot length',
+      save_changes:'Save changes',
+      saved:'Changes saved'
+    },
+
+    hi: {
+      hero_title:'देखभाल, आपके समय पर।',
+      hero_sub:'बलांगीर के भरोसेमंद डॉक्टरों से एक मिनट में अपॉइंटमेंट बुक करें। न लाइन, न फ़ोन कॉल।',
+      hero_cta:'अपॉइंटमेंट बुक करें',
+      scroll_hint:'जानने के लिए स्क्रॉल करें',
+      appt_confirmed:'अपॉइंटमेंट पक्का',
+      today_at:'आज, {time}',
+      pulse_title:'हर धड़कन इत्मीनान से ध्यान की हक़दार है।',
+      pulse_body:'Auria आपको आस-पास के विशेषज्ञों से जोड़ता है और घर से निकलने से पहले ही उनका असली खाली समय दिखाता है।',
+      steps_title:'डॉक्टर तक चार आसान कदम।',
+      step1_t:'क्लिनिक खोजें', step1_d:'शहर के नक्शे पर अपने आस-पास के क्लिनिक देखें।',
+      step2_t:'अपना डॉक्टर चुनें', step2_d:'हर डॉक्टर की विशेषज्ञता, अनुभव और फ़ीस पढ़ें।',
+      step3_t:'समय चुनें', step3_d:'दिन भरने के साथ खाली स्लॉट अपडेट होते रहते हैं।',
+      step4_t:'कोड से पुष्टि करें', step4_d:'आपके +91 नंबर पर भेजा गया वन-टाइम कोड बुकिंग को सुरक्षित करता है।',
+      care_title:'ऐसी देखभाल जो आपकी ज़िंदगी के अनुरूप हो।',
+      assure1:'आपका नंबर निजी रहता है',
+      assure2:'फ़ीस बुकिंग से पहले दिखती है, भुगतान क्लिनिक पर',
+      assure3:'असली उपलब्धता, दिन भर अपडेट',
+      spec_title:'बलांगीर को जानने वाले विशेषज्ञ।',
+      spec_body:'रोज़ाना जाँच से लेकर हृदय की देखभाल तक, तीन मोहल्ला क्लिनिकों में।',
+      fee_from:'परामर्श \u20b9{n}',
+      choose_title:'आप कैसे आगे बढ़ना चाहेंगे?',
+      role_patient_t:'अपॉइंटमेंट बुक करें', role_patient_d:'क्लिनिक खोजें और समय आरक्षित करें',
+      role_clinic_t:'मैं क्लिनिक संभालता/संभालती हूँ', role_clinic_d:'डॉक्टर, स्लॉट और फ़ीस अपडेट करें',
+      footer:'बलांगीर, ओडिशा के लिए बनाया गया',
+      back:'वापस', language:'भाषा',
+
+      signin_patient_h:'आइए आपका अगला अपॉइंटमेंट ढूँढें',
+      patient_access:'बुक करने के लिए अपने मोबाइल नंबर से साइन इन करें।',
+      mobile:'मोबाइल नंबर', mobile_ph:'10 अंकों का नंबर',
+      fullname:'पूरा नाम', fullname_ph:'जैसा आपके रिकॉर्ड में है',
+      continue:'आगे बढ़ें',
+      err_mobile:'सही 10 अंकों का मोबाइल नंबर डालें',
+
+      signin_clinic_h:'अपनी प्रैक्टिस संभालें',
+      clinic_admin:'{clinic} के लिए प्रशासक साइन-इन',
+      work_email:'कार्य ईमेल', password:'पासवर्ड',
+      signin_console:'कंसोल में साइन इन करें',
+      signed_in:'{clinic} में साइन इन हो गया',
+
+      find_clinic:'क्लिनिक खोजें',
+      near:'{loc} के पास',
+      default_loc:'बलांगीर, ओडिशा, भारत',
+      enter_location:'स्थान दर्ज करें',
+      chip_all:'सभी विशेषज्ञताएँ', chip_today:'आज उपलब्ध', chip_2km:'2 किमी के भीतर', chip_top:'सर्वोच्च रेटिंग',
+      clinics_in:'बलांगीर में {n} क्लिनिक',
+      clinics_near:'आपके पास के क्लिनिक',
+      results:'{n} परिणाम',
+      doctors_n:'{n} डॉक्टर', doctors_1:'1 डॉक्टर',
+      open_now:'अभी खुला है',
+      from_slots:'{n} मिनट से स्लॉट',
+      pinch_hint:'खिसकाने के लिए खींचें। ज़ूम के लिए + और \u2212 दबाएँ।',
+
+      available_doctors:'उपलब्ध डॉक्टर',
+      select_date:'तारीख चुनें',
+      dur_note:'{n} मिनट का परामर्श, क्लिनिक द्वारा तय',
+      available_times:'उपलब्ध समय',
+      no_slots:'इस दिन कोई समय खाली नहीं है। कोई और तारीख चुनें।',
+      fee:'परामर्श शुल्क',
+      book_time:'{time} बुक करें',
+      choose_time:'समय चुनें',
+      min:'मिनट',
+
+      confirm_booking:'अपनी बुकिंग की पुष्टि करें',
+      confirm_sub:'विवरण जाँचें, फिर अपना नंबर सत्यापित करें।',
+      doctor:'डॉक्टर', clinic:'क्लिनिक', date:'तारीख', time:'समय', fee_short:'शुल्क',
+      payable:'\u20b9{n}, क्लिनिक पर भुगतान',
+      otp_note:'यह पुष्टि करने के लिए कि बुकिंग आप ही कर रहे हैं, हम एक वन-टाइम कोड SMS करेंगे।',
+      send_code:'पुष्टि कोड भेजें',
+      demo_code:'डेमो कोड: 4821',
+
+      enter_code:'कोड दर्ज करें',
+      sent_to:'{m} पर भेजा गया',
+      no_code:'कोड नहीं मिला?',
+      resend:'कोड दोबारा भेजें',
+      confirm_appt:'अपॉइंटमेंट की पुष्टि करें',
+      err_otp_short:'सभी 4 अंक दर्ज करें',
+      err_otp_wrong:'कोड मेल नहीं खाता। डेमो कोड 4821 डालें।',
+
+      booked:'आपकी बुकिंग हो गई',
+      booked_body:'पुष्टि {m} पर भेज दी गई है। कृपया 10 मिनट पहले पहुँचें।',
+      back_start:'शुरुआत पर लौटें',
+
+      admin_console:'प्रशासक कंसोल',
+      signout:'साइन आउट',
+      doctor_profile:'डॉक्टर प्रोफ़ाइल',
+      edit_note:'आप हिन्दी संस्करण संपादित कर रहे हैं।',
+      upload_photo:'फ़ोटो अपलोड करें',
+      speciality:'विशेषज्ञता',
+      bio_label:'मरीज़ों को दिखने वाला परिचय',
+      slot_length:'अपॉइंटमेंट स्लॉट की अवधि',
+      save_changes:'बदलाव सहेजें',
+      saved:'बदलाव सहेजे गए'
+    },
+
+    or: {
+      hero_title:'ଯତ୍ନ, ଆପଣଙ୍କ ସମୟରେ।',
+      hero_sub:'ବଲାଙ୍ଗୀରର ବିଶ୍ୱସ୍ତ ଡାକ୍ତରଙ୍କ ସହ ଏକ ମିନିଟରେ ଆପଏଣ୍ଟମେଣ୍ଟ ବୁକ୍ କରନ୍ତୁ। ନା ଧାଡ଼ି, ନା ଫୋନ୍ କଲ୍।',
+      hero_cta:'ଆପଏଣ୍ଟମେଣ୍ଟ ବୁକ୍ କରନ୍ତୁ',
+      scroll_hint:'ଜାଣିବାକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ',
+      appt_confirmed:'ଆପଏଣ୍ଟମେଣ୍ଟ ନିଶ୍ଚିତ',
+      today_at:'ଆଜି, {time}',
+      pulse_title:'ପ୍ରତିଟି ହୃଦ୍‌ସ୍ପନ୍ଦନ ଧୀରସ୍ଥିର ଧ୍ୟାନ ପାଇବାର ଯୋଗ୍ୟ।',
+      pulse_body:'Auria ଆପଣଙ୍କୁ ନିକଟସ୍ଥ ବିଶେଷଜ୍ଞଙ୍କ ସହ ଯୋଡ଼େ, ଏବଂ ଘରୁ ବାହାରିବା ପୂର୍ବରୁ ସେମାନଙ୍କ ପ୍ରକୃତ ଖାଲି ସମୟ ଦେଖାଏ।',
+      steps_title:'ଡାକ୍ତରଙ୍କ ପାଖକୁ ଚାରିଟି ସହଜ ପଦକ୍ଷେପ।',
+      step1_t:'କ୍ଲିନିକ୍ ଖୋଜନ୍ତୁ', step1_d:'ସହରର ମାନଚିତ୍ରରେ ଆପଣଙ୍କ ଆଖପାଖର କ୍ଲିନିକ୍ ଦେଖନ୍ତୁ।',
+      step2_t:'ଆପଣଙ୍କ ଡାକ୍ତର ବାଛନ୍ତୁ', step2_d:'ପ୍ରତ୍ୟେକ ଡାକ୍ତରଙ୍କ ବିଶେଷଜ୍ଞତା, ଅଭିଜ୍ଞତା ଓ ଶୁଳ୍କ ପଢ଼ନ୍ତୁ।',
+      step3_t:'ସମୟ ବାଛନ୍ତୁ', step3_d:'ଦିନ ଭରିବା ସହ ଖାଲି ସ୍ଲଟ୍ ଅପଡେଟ୍ ହୁଏ।',
+      step4_t:'କୋଡ୍ ଦ୍ୱାରା ନିଶ୍ଚିତ କରନ୍ତୁ', step4_d:'ଆପଣଙ୍କ +91 ନମ୍ବରକୁ ପଠାଯାଇଥିବା ୱାନ୍-ଟାଇମ୍ କୋଡ୍ ବୁକିଂକୁ ସୁରକ୍ଷିତ କରେ।',
+      care_title:'ଆପଣଙ୍କ ଜୀବନଶୈଳୀ ଅନୁଯାୟୀ ଯତ୍ନ।',
+      assure1:'ଆପଣଙ୍କ ନମ୍ବର ଗୋପନୀୟ ରହେ',
+      assure2:'ବୁକିଂ ପୂର୍ବରୁ ଶୁଳ୍କ ଦେଖାଯାଏ, ପୈଠ କ୍ଲିନିକରେ',
+      assure3:'ପ୍ରକୃତ ଉପଲବ୍ଧତା, ଦିନସାରା ଅପଡେଟ୍',
+      spec_title:'ବଲାଙ୍ଗୀରକୁ ଜାଣିଥିବା ବିଶେଷଜ୍ଞ।',
+      spec_body:'ସାଧାରଣ ଯାଞ୍ଚଠାରୁ ହୃଦ୍‌ରୋଗ ଚିକିତ୍ସା ପର୍ଯ୍ୟନ୍ତ, ତିନୋଟି ପଡ଼ୋଶୀ କ୍ଲିନିକରେ।',
+      fee_from:'ପରାମର୍ଶ \u20b9{n}',
+      choose_title:'ଆପଣ କିପରି ଆଗକୁ ବଢ଼ିବାକୁ ଚାହିଁବେ?',
+      role_patient_t:'ଆପଏଣ୍ଟମେଣ୍ଟ ବୁକ୍ କରନ୍ତୁ', role_patient_d:'କ୍ଲିନିକ୍ ଖୋଜି ସମୟ ସଂରକ୍ଷଣ କରନ୍ତୁ',
+      role_clinic_t:'ମୁଁ କ୍ଲିନିକ୍ ପରିଚାଳନା କରେ', role_clinic_d:'ଡାକ୍ତର, ସ୍ଲଟ୍ ଓ ଶୁଳ୍କ ଅପଡେଟ୍ କରନ୍ତୁ',
+      footer:'ବଲାଙ୍ଗୀର, ଓଡ଼ିଶା ପାଇଁ ପ୍ରସ୍ତୁତ',
+      back:'ପଛକୁ', language:'ଭାଷା',
+
+      signin_patient_h:'ଆସନ୍ତୁ ଆପଣଙ୍କ ପରବର୍ତ୍ତୀ ଆପଏଣ୍ଟମେଣ୍ଟ ଖୋଜିବା',
+      patient_access:'ବୁକ୍ କରିବାକୁ ଆପଣଙ୍କ ମୋବାଇଲ୍ ନମ୍ବରରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।',
+      mobile:'ମୋବାଇଲ୍ ନମ୍ବର', mobile_ph:'10 ଅଙ୍କ ବିଶିଷ୍ଟ ନମ୍ବର',
+      fullname:'ପୂରା ନାମ', fullname_ph:'ଆପଣଙ୍କ ରେକର୍ଡରେ ଥିବା ଭଳି',
+      continue:'ଆଗକୁ ବଢ଼ନ୍ତୁ',
+      err_mobile:'ଏକ ସଠିକ୍ 10 ଅଙ୍କ ମୋବାଇଲ୍ ନମ୍ବର ଦିଅନ୍ତୁ',
+
+      signin_clinic_h:'ଆପଣଙ୍କ ପ୍ରାକ୍ଟିସ୍ ପରିଚାଳନା କରନ୍ତୁ',
+      clinic_admin:'{clinic} ପାଇଁ ପ୍ରଶାସକ ସାଇନ୍-ଇନ୍',
+      work_email:'କାର୍ଯ୍ୟ ଇମେଲ୍', password:'ପାସୱାର୍ଡ',
+      signin_console:'କନସୋଲରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ',
+      signed_in:'{clinic}ରେ ସାଇନ୍ ଇନ୍ ହେଲା',
+
+      find_clinic:'କ୍ଲିନିକ୍ ଖୋଜନ୍ତୁ',
+      near:'{loc} ନିକଟରେ',
+      default_loc:'ବଲାଙ୍ଗୀର, ଓଡ଼ିଶା, ଭାରତ',
+      enter_location:'ସ୍ଥାନ ଲେଖନ୍ତୁ',
+      chip_all:'ସମସ୍ତ ବିଶେଷଜ୍ଞତା', chip_today:'ଆଜି ଉପଲବ୍ଧ', chip_2km:'2 କିମି ଭିତରେ', chip_top:'ସର୍ବୋଚ୍ଚ ମୂଲ୍ୟାଙ୍କିତ',
+      clinics_in:'ବଲାଙ୍ଗୀରରେ {n}ଟି କ୍ଲିନିକ୍',
+      clinics_near:'ଆପଣଙ୍କ ନିକଟସ୍ଥ କ୍ଲିନିକ୍',
+      results:'{n}ଟି ଫଳାଫଳ',
+      doctors_n:'{n} ଜଣ ଡାକ୍ତର', doctors_1:'1 ଜଣ ଡାକ୍ତର',
+      open_now:'ବର୍ତ୍ତମାନ ଖୋଲା',
+      from_slots:'{n} ମିନିଟରୁ ସ୍ଲଟ୍',
+      pinch_hint:'ଘୁଞ୍ଚାଇବାକୁ ଟାଣନ୍ତୁ। ଜୁମ୍ ପାଇଁ + ଓ \u2212 ଦବାନ୍ତୁ।',
+
+      available_doctors:'ଉପଲବ୍ଧ ଡାକ୍ତର',
+      select_date:'ତାରିଖ ବାଛନ୍ତୁ',
+      dur_note:'{n} ମିନିଟର ପରାମର୍ଶ, କ୍ଲିନିକ୍ ଦ୍ୱାରା ସ୍ଥିର',
+      available_times:'ଉପଲବ୍ଧ ସମୟ',
+      no_slots:'ଏହି ଦିନ କୌଣସି ସମୟ ଖାଲି ନାହିଁ। ଅନ୍ୟ ଏକ ତାରିଖ ବାଛନ୍ତୁ।',
+      fee:'ପରାମର୍ଶ ଶୁଳ୍କ',
+      book_time:'{time} ବୁକ୍ କରନ୍ତୁ',
+      choose_time:'ସମୟ ବାଛନ୍ତୁ',
+      min:'ମିନିଟ୍',
+
+      confirm_booking:'ଆପଣଙ୍କ ବୁକିଂ ନିଶ୍ଚିତ କରନ୍ତୁ',
+      confirm_sub:'ବିବରଣୀ ଯାଞ୍ଚ କରି ଆପଣଙ୍କ ନମ୍ବର ସତ୍ୟାପନ କରନ୍ତୁ।',
+      doctor:'ଡାକ୍ତର', clinic:'କ୍ଲିନିକ୍', date:'ତାରିଖ', time:'ସମୟ', fee_short:'ଶୁଳ୍କ',
+      payable:'\u20b9{n}, କ୍ଲିନିକରେ ପୈଠ',
+      otp_note:'ଏହି ବୁକିଂ ଆପଣ ହିଁ କରୁଛନ୍ତି ବୋଲି ନିଶ୍ଚିତ କରିବାକୁ ଆମେ ଏକ ୱାନ୍-ଟାଇମ୍ କୋଡ୍ SMS କରିବୁ।',
+      send_code:'ନିଶ୍ଚିତକରଣ କୋଡ୍ ପଠାନ୍ତୁ',
+      demo_code:'ଡେମୋ କୋଡ୍: 4821',
+
+      enter_code:'କୋଡ୍ ଲେଖନ୍ତୁ',
+      sent_to:'{m}କୁ ପଠାଯାଇଛି',
+      no_code:'କୋଡ୍ ପାଇଲେ ନାହିଁ?',
+      resend:'କୋଡ୍ ପୁଣି ପଠାନ୍ତୁ',
+      confirm_appt:'ଆପଏଣ୍ଟମେଣ୍ଟ ନିଶ୍ଚିତ କରନ୍ତୁ',
+      err_otp_short:'ସମସ୍ତ 4ଟି ଅଙ୍କ ଲେଖନ୍ତୁ',
+      err_otp_wrong:'କୋଡ୍ ମେଳ ଖାଉନାହିଁ। ଡେମୋ କୋଡ୍ 4821 ଲେଖନ୍ତୁ।',
+
+      booked:'ଆପଣଙ୍କ ବୁକିଂ ହୋଇଗଲା',
+      booked_body:'ନିଶ୍ଚିତକରଣ {m}କୁ ପଠାଯାଇଛି। ଦୟାକରି 10 ମିନିଟ୍ ପୂର୍ବରୁ ପହଞ୍ଚନ୍ତୁ।',
+      back_start:'ଆରମ୍ଭକୁ ଫେରନ୍ତୁ',
+
+      admin_console:'ପ୍ରଶାସକ କନସୋଲ୍',
+      signout:'ସାଇନ୍ ଆଉଟ୍',
+      doctor_profile:'ଡାକ୍ତର ପ୍ରୋଫାଇଲ୍',
+      edit_note:'ଆପଣ ଓଡ଼ିଆ ସଂସ୍କରଣ ସମ୍ପାଦନ କରୁଛନ୍ତି।',
+      upload_photo:'ଫଟୋ ଅପଲୋଡ୍ କରନ୍ତୁ',
+      speciality:'ବିଶେଷଜ୍ଞତା',
+      bio_label:'ରୋଗୀଙ୍କୁ ଦେଖାଯାଉଥିବା ପରିଚୟ',
+      slot_length:'ଆପଏଣ୍ଟମେଣ୍ଟ ସ୍ଲଟର ଅବଧି',
+      save_changes:'ପରିବର୍ତ୍ତନ ସେଭ୍ କରନ୍ତୁ',
+      saved:'ପରିବର୍ତ୍ତନ ସେଭ୍ ହେଲା'
+    }
+  };
+
+  var CAL = {
+    en: { dS:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], dL:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+          m:['January','February','March','April','May','June','July','August','September','October','November','December'] },
+    hi: { dS:['रवि','सोम','मंगल','बुध','गुरु','शुक्र','शनि'], dL:['रविवार','सोमवार','मंगलवार','बुधवार','गुरुवार','शुक्रवार','शनिवार'],
+          m:['जनवरी','फ़रवरी','मार्च','अप्रैल','मई','जून','जुलाई','अगस्त','सितंबर','अक्तूबर','नवंबर','दिसंबर'] },
+    or: { dS:['ରବି','ସୋମ','ମଙ୍ଗଳ','ବୁଧ','ଗୁରୁ','ଶୁକ୍ର','ଶନି'], dL:['ରବିବାର','ସୋମବାର','ମଙ୍ଗଳବାର','ବୁଧବାର','ଗୁରୁବାର','ଶୁକ୍ରବାର','ଶନିବାର'],
+          m:['ଜାନୁଆରୀ','ଫେବୃଆରୀ','ମାର୍ଚ୍ଚ','ଅପ୍ରେଲ','ମଇ','ଜୁନ୍','ଜୁଲାଇ','ଅଗଷ୍ଟ','ସେପ୍ଟେମ୍ବର','ଅକ୍ଟୋବର','ନଭେମ୍ବର','ଡିସେମ୍ବର'] }
+  };
+
+  /* =========================================================
+     DATA
+     ========================================================= */
   var DATA = {
     clinics: [
-      { id:'c1', name:'Golebazar Family Clinic', area:'Golebazar · 0.6 km', color:'#B08D57', x:300, y:230, doctorIds:['d1','d2'] },
-      { id:'c2', name:'Kachari Road Health Centre', area:'Kachari Road, near District Court · 1.1 km', color:'#8AA391', x:430, y:150, doctorIds:['d3'] },
-      { id:'c3', name:'Tureikela Road Clinic', area:'Tureikela Road · 1.8 km', color:'#C1666B', x:190, y:310, doctorIds:['d4'] }
+      { id:'c1', color:'#C9A56B', x:300, y:230, doctorIds:['d1','d2'],
+        name:{ en:'Golebazar Family Clinic', hi:'गोलबाज़ार फ़ैमिली क्लिनिक', or:'ଗୋଲବଜାର ଫ୍ୟାମିଲି କ୍ଲିନିକ୍' },
+        area:{ en:'Golebazar, 0.6 km', hi:'गोलबाज़ार, 0.6 किमी', or:'ଗୋଲବଜାର, 0.6 କିମି' } },
+      { id:'c2', color:'#8AA391', x:430, y:150, doctorIds:['d3'],
+        name:{ en:'Kachari Road Health Centre', hi:'कचहरी रोड स्वास्थ्य केंद्र', or:'କଚେରୀ ରୋଡ୍ ସ୍ୱାସ୍ଥ୍ୟ କେନ୍ଦ୍ର' },
+        area:{ en:'Kachari Road, near District Court, 1.1 km', hi:'कचहरी रोड, जिला न्यायालय के पास, 1.1 किमी', or:'କଚେରୀ ରୋଡ୍, ଜିଲ୍ଲା କୋର୍ଟ ନିକଟ, 1.1 କିମି' } },
+      { id:'c3', color:'#C1666B', x:190, y:310, doctorIds:['d4'],
+        name:{ en:'Tureikela Road Clinic', hi:'तुरेईकेला रोड क्लिनिक', or:'ତୁରେଇକେଲା ରୋଡ୍ କ୍ଲିନିକ୍' },
+        area:{ en:'Tureikela Road, 1.8 km', hi:'तुरेईकेला रोड, 1.8 किमी', or:'ତୁରେଇକେଲା ରୋଡ୍, 1.8 କିମି' } }
     ],
     doctors: [
-      { id:'d1', clinicId:'c1', name:'Dr. Ritesh Patnaik', spec:'General Physician', bio:'Preventive care and long-term wellness plans, with 14 years in practice around Balangir.', duration:15, fee:250, photo:null, initials:'RP', tint:'#B08D57' },
-      { id:'d2', clinicId:'c1', name:'Dr. Sasmita Meher', spec:'Dermatology', bio:'Skin health, minor procedures and cosmetic consultations.', duration:25, fee:500, photo:null, initials:'SM', tint:'#7C8FA3' },
-      { id:'d3', clinicId:'c2', name:'Dr. Debasish Sahu', spec:'Cardiology', bio:'Cardiovascular risk assessment and ongoing heart-health monitoring.', duration:25, fee:600, photo:null, initials:'DS', tint:'#8AA391' },
-      { id:'d4', clinicId:'c3', name:'Dr. Anupama Nayak', spec:'Paediatrics', bio:'Family and child medicine, with same-week appointments available.', duration:10, fee:150, photo:null, initials:'AN', tint:'#C1666B' }
+      { id:'d1', clinicId:'c1', duration:15, fee:250, photo:null, tint:'#B08D57', icon:'gp',
+        look:{ skin:'#B98062', hair:'#1B1512', style:'short', scrub:'#3F6371', glasses:true },
+        name:{ en:'Dr. Ritesh Patnaik', hi:'डॉ. रितेश पटनायक', or:'ଡା. ରିତେଶ ପଟ୍ଟନାୟକ' },
+        spec:{ en:'General Physician', hi:'सामान्य चिकित्सक', or:'ସାଧାରଣ ଚିକିତ୍ସକ' },
+        bio:{ en:'Preventive care and long-term wellness plans, with 14 years in practice around Balangir.',
+              hi:'निवारक देखभाल और दीर्घकालिक स्वास्थ्य योजनाएँ; बलांगीर में 14 वर्षों का अनुभव।',
+              or:'ପ୍ରତିଷେଧକ ଯତ୍ନ ଓ ଦୀର୍ଘକାଳୀନ ସୁସ୍ଥତା ଯୋଜନା; ବଲାଙ୍ଗୀରରେ 14 ବର୍ଷର ଅଭିଜ୍ଞତା।' } },
+      { id:'d2', clinicId:'c1', duration:25, fee:500, photo:null, tint:'#7C8FA3', icon:'derm',
+        look:{ skin:'#C68F6E', hair:'#16110F', style:'long', scrub:'#6B5A8E', glasses:false },
+        name:{ en:'Dr. Sasmita Meher', hi:'डॉ. सस्मिता मेहेर', or:'ଡା. ସସ୍ମିତା ମେହେର' },
+        spec:{ en:'Dermatology', hi:'त्वचा रोग विशेषज्ञ', or:'ଚର୍ମରୋଗ ବିଶେଷଜ୍ଞ' },
+        bio:{ en:'Skin health, minor procedures and cosmetic consultations.',
+              hi:'त्वचा स्वास्थ्य, छोटी प्रक्रियाएँ और कॉस्मेटिक परामर्श।',
+              or:'ଚର୍ମ ସ୍ୱାସ୍ଥ୍ୟ, ଛୋଟ ପ୍ରକ୍ରିୟା ଓ କସ୍ମେଟିକ୍ ପରାମର୍ଶ।' } },
+      { id:'d3', clinicId:'c2', duration:25, fee:600, photo:null, tint:'#8AA391', icon:'cardio',
+        look:{ skin:'#A87156', hair:'#2A221E', style:'side', scrub:'#7A3E45', glasses:false },
+        name:{ en:'Dr. Debasish Sahu', hi:'डॉ. देबाशीष साहू', or:'ଡା. ଦେବାଶିଷ ସାହୁ' },
+        spec:{ en:'Cardiology', hi:'हृदय रोग विशेषज्ञ', or:'ହୃଦ୍‌ରୋଗ ବିଶେଷଜ୍ଞ' },
+        bio:{ en:'Cardiovascular risk assessment and ongoing heart-health monitoring.',
+              hi:'हृदय रोग जोखिम का आकलन और नियमित हृदय स्वास्थ्य निगरानी।',
+              or:'ହୃଦ୍‌ରୋଗ ବିପଦ ଆକଳନ ଓ ନିୟମିତ ହୃଦ୍‌ସ୍ୱାସ୍ଥ୍ୟ ତଦାରଖ।' } },
+      { id:'d4', clinicId:'c3', duration:10, fee:150, photo:null, tint:'#C1666B', icon:'paed',
+        look:{ skin:'#C4906F', hair:'#120E0C', style:'bun', scrub:'#3E6B5A', glasses:false },
+        name:{ en:'Dr. Anupama Nayak', hi:'डॉ. अनुपमा नायक', or:'ଡା. ଅନୁପମା ନାୟକ' },
+        spec:{ en:'Paediatrics', hi:'शिशु रोग विशेषज्ञ', or:'ଶିଶୁରୋଗ ବିଶେଷଜ୍ଞ' },
+        bio:{ en:'Family and child medicine, with same-week appointments available.',
+              hi:'परिवार और बाल चिकित्सा; इसी सप्ताह अपॉइंटमेंट उपलब्ध।',
+              or:'ପରିବାର ଓ ଶିଶୁ ଚିକିତ୍ସା; ଏହି ସପ୍ତାହରେ ଆପଏଣ୍ଟମେଣ୍ଟ ଉପଲବ୍ଧ।' } }
     ]
   };
-  var saved = loadState();
-  if(saved && saved.doctors){
-    saved.doctors.forEach(function(sd){
-      var d = DATA.doctors.find(function(x){ return x.id===sd.id; });
-      if(d){ d.name=sd.name; d.spec=sd.spec; d.bio=sd.bio; d.duration=sd.duration; d.fee=sd.fee; d.photo=sd.photo; d.initials=sd.initials; }
-    });
+
+  var ROADS = [
+    { d:'M-10,150 L650,108', lx:20, ly:172, label:{ en:'Patnagarh Road', hi:'पटनागढ़ रोड', or:'ପାଟଣାଗଡ଼ ରୋଡ୍' } },
+    { d:'M70,-10 L128,430', lx:78, ly:28, label:{ en:'Station Road', hi:'स्टेशन रोड', or:'ଷ୍ଟେସନ୍ ରୋଡ୍' } },
+    { d:'M-10,304 L650,334', lx:230, ly:352, label:{ en:'Tureikela Road', hi:'तुरेईकेला रोड', or:'ତୁରେଇକେଲା ରୋଡ୍' } },
+    { d:'M388,-10 L428,430', lx:398, ly:55, label:{ en:'Kachari Road', hi:'कचहरी रोड', or:'କଚେରୀ ରୋଡ୍' } },
+    { d:'M-10,236 Q220,190 340,232 T650,262', lx:470, ly:246, label:{ en:'College Road', hi:'कॉलेज रोड', or:'କଲେଜ ରୋଡ୍' } }
+  ];
+  var LANDMARKS = [
+    { x:118, y:56, label:{ en:'Sailashree Palace', hi:'शैलश्री पैलेस', or:'ଶୈଳଶ୍ରୀ ପ୍ରାସାଦ' } },
+    { x:522, y:52, label:{ en:'Balangir Junction', hi:'बलांगीर जंक्शन', or:'ବଲାଙ୍ଗୀର ଜଙ୍କସନ୍' } },
+    { x:566, y:302, label:{ en:'Rajendra College', hi:'राजेंद्र कॉलेज', or:'ରାଜେନ୍ଦ୍ର କଲେଜ' } },
+    { x:468, y:196, label:{ en:'District HQ Hospital', hi:'जिला मुख्यालय अस्पताल', or:'ଜିଲ୍ଲା ମୁଖ୍ୟ ଚିକିତ୍ସାଳୟ' } },
+    { x:322, y:104, label:{ en:'Bus Stand', hi:'बस स्टैंड', or:'ବସ୍ ଷ୍ଟାଣ୍ଡ' } }
+  ];
+  var STREAM = { en:'Seasonal stream', hi:'मौसमी नाला', or:'ମୌସୁମୀ ନାଳ' };
+  var ADMIN_CLINIC = 'c1';
+
+  /* =========================================================
+     STATE + PERSISTENCE
+     ========================================================= */
+  var STORE_KEY = 'auria-state-v2';
+  function loadStore(){ try{ var r = localStorage.getItem(STORE_KEY); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+  function saveStore(){
+    try{
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        lang: S.lang,
+        doctors: DATA.doctors.map(function(d){ return { id:d.id, name:d.name, spec:d.spec, bio:d.bio, duration:d.duration, fee:d.fee, photo:d.photo }; })
+      }));
+    }catch(e){}
   }
 
-  function clinicOf(doc){ return DATA.clinics.find(function(c){ return c.id===doc.clinicId; }); }
-  function doctorsOf(clinic){ return DATA.doctors.filter(function(d){ return d.clinicId===clinic.id; }); }
-
-  function nextDays(n){
-    var out=[]; var names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-    var today=new Date();
-    for(var i=0;i<n;i++){
-      var d=new Date(today); d.setDate(today.getDate()+i);
-      out.push({ label: names[d.getDay()], num: d.getDate(), key: d.toISOString().slice(0,10) });
-    }
-    return out;
-  }
-
-  function buildSlots(doctor, dateKey){
-    // deterministic pseudo-random "taken" pattern from date+doctor
-    var dur = doctor.duration;
-    var startMin = 9*60, endMin = 17*60;
-    var slots = [];
-    var seed = 0; for(var i=0;i<dateKey.length;i++) seed += dateKey.charCodeAt(i);
-    seed += doctor.id.charCodeAt(1);
-    var t = startMin, idx=0;
-    while(t + dur <= endMin){
-      var h = Math.floor(t/60), m = t%60;
-      var label = (h%12===0?12:h%12) + ':' + (m<10?'0':'')+m + (h<12?'am':'pm');
-      var taken = ((seed*(idx+3)) % 7) === 0;
-      slots.push({ time: label, minutes: t, taken: taken });
-      t += dur; idx++;
-    }
-    return slots;
-  }
-
-  // ---------------- state ----------------
   var S = {
+    lang: 'en',
     screen: 'splash',
-    role: null,
-    location: 'Balangir, Odisha, India',
     selectedClinicId: null,
     selectedDoctorId: null,
     selectedDateKey: null,
     selectedSlot: null,
     bookingMobile: '',
-    otpSent: false,
+    patientName: '',
     adminDoctorId: null,
     history: []
   };
 
-  var MAP_BASE = { w:640, h:420, minW:180 };
-  var mapView = { x:0, y:0, w:640, h:420 };
-  function clampMapView(){
-    if(mapView.w > MAP_BASE.w) mapView.w = MAP_BASE.w;
-    if(mapView.w < MAP_BASE.minW) mapView.w = MAP_BASE.minW;
-    mapView.h = mapView.w * (MAP_BASE.h/MAP_BASE.w);
-    if(mapView.x < 0) mapView.x = 0;
-    if(mapView.y < 0) mapView.y = 0;
-    if(mapView.x > MAP_BASE.w - mapView.w) mapView.x = MAP_BASE.w - mapView.w;
-    if(mapView.y > MAP_BASE.h - mapView.h) mapView.y = MAP_BASE.h - mapView.h;
-  }
-  function applyMapView(svg){
-    svg.setAttribute('viewBox', mapView.x.toFixed(1)+' '+mapView.y.toFixed(1)+' '+mapView.w.toFixed(1)+' '+mapView.h.toFixed(1));
-  }
-  function zoomMap(svg, factor, cx, cy){
-    var oldw = mapView.w, oldh = mapView.h;
-    if(cx===undefined){ cx = mapView.x + oldw/2; cy = mapView.y + oldh/2; }
-    var neww = oldw * factor;
-    if(neww > MAP_BASE.w) neww = MAP_BASE.w;
-    if(neww < MAP_BASE.minW) neww = MAP_BASE.minW;
-    var newh = neww * (MAP_BASE.h/MAP_BASE.w);
-    mapView.x = cx - (cx-mapView.x) * (neww/oldw);
-    mapView.y = cy - (cy-mapView.y) * (newh/oldh);
-    mapView.w = neww; mapView.h = newh;
-    clampMapView();
-    applyMapView(svg);
+  var stored = loadStore();
+  if(stored){
+    if(stored.lang && I18N[stored.lang]) S.lang = stored.lang;
+    (stored.doctors || []).forEach(function(sd){
+      var d = doc(sd.id);
+      if(!d) return;
+      ['name','spec','bio'].forEach(function(k){ if(sd[k] && typeof sd[k] === 'object') d[k] = sd[k]; });
+      if(sd.duration) d.duration = sd.duration;
+      if(sd.fee) d.fee = sd.fee;
+      d.photo = sd.photo || null;
+    });
   }
 
+  /* =========================================================
+     HELPERS
+     ========================================================= */
+  function t(k, v){
+    var s = (I18N[S.lang] && I18N[S.lang][k]) || I18N.en[k] || k;
+    if(v) s = s.replace(/\{(\w+)\}/g, function(m, n){ return v[n] != null ? v[n] : m; });
+    return s;
+  }
+  function L(o){ return o ? (o[S.lang] || o.en || '') : ''; }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]; }); }
+  function clamp(v, a, b){ a = a == null ? 0 : a; b = b == null ? 1 : b; return Math.max(a, Math.min(b, v)); }
+  function easeOut(p){ return 1 - Math.pow(1 - p, 3); }
+  function doc(id){ return DATA.doctors.find(function(x){ return x.id === id; }); }
+  function clinic(id){ return DATA.clinics.find(function(x){ return x.id === id; }); }
+  function clinicOf(d){ return clinic(d.clinicId); }
+  function doctorsOf(c){ return DATA.doctors.filter(function(d){ return d.clinicId === c.id; }); }
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function keyOf(d){ return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function dateOf(key){ var p = key.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); }
+  function fmtTime(min){
+    var h = Math.floor(min / 60), m = min % 60;
+    return ((h % 12) || 12) + ':' + pad(m) + ' ' + (h < 12 ? 'AM' : 'PM');
+  }
+  function fmtDateLong(key){
+    var d = dateOf(key), c = CAL[S.lang];
+    return c.dL[d.getDay()] + ', ' + d.getDate() + ' ' + c.m[d.getMonth()];
+  }
+  function fmtPhone(digits){ return '+91 ' + digits.slice(0, 5) + ' ' + digits.slice(5); }
+  function validMobile(v){ return /^[6-9]\d{9}$/.test(v); }
+  function doctorsLabel(n){ return n === 1 ? t('doctors_1') : t('doctors_n', { n:n }); }
+  function words(s){ return s.split(' ').map(function(w){ return '<span class="w">' + w + '</span>'; }).join(' '); }
+
+  function nextDays(n){
+    var out = [], today = new Date();
+    for(var i = 0; i < n; i++){
+      var d = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      out.push({ label: CAL[S.lang].dS[d.getDay()], num: d.getDate(), key: keyOf(d) });
+    }
+    return out;
+  }
+
+  function buildSlots(d, dateKey){
+    var dur = d.duration, start = 9 * 60, end = 17 * 60, out = [];
+    var seed = 0; for(var i = 0; i < dateKey.length; i++) seed += dateKey.charCodeAt(i);
+    seed += d.id.charCodeAt(1);
+    var now = new Date(), isToday = dateKey === keyOf(now);
+    var nowMin = now.getHours() * 60 + now.getMinutes();
+    for(var tm = start, idx = 0; tm + dur <= end; tm += dur, idx++){
+      var taken = ((seed * 31 + idx * idx * 7 + idx * 13) % 5) === 0 || (isToday && tm <= nowMin + 15);
+      out.push({ minutes: tm, label: fmtTime(tm), taken: taken });
+    }
+    return out;
+  }
+
+  var RM = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* =========================================================
+     ILLUSTRATIONS (all inline SVG, nothing remote)
+     ========================================================= */
+  function mix(hex, to, amt){
+    var a = parseInt(hex.slice(1), 16), b = parseInt(to.slice(1), 16);
+    var r = Math.round(((a >> 16) & 255) * (1 - amt) + ((b >> 16) & 255) * amt);
+    var g = Math.round(((a >> 8) & 255) * (1 - amt) + ((b >> 8) & 255) * amt);
+    var bl = Math.round((a & 255) * (1 - amt) + (b & 255) * amt);
+    return '#' + ((1 << 24) + (r << 16) + (g << 8) + bl).toString(16).slice(1);
+  }
+
+  var uid = 0;
+  function portraitSvg(d){
+    var id = 'pt' + (++uid), lk = d.look, h = lk.hair, s = lk.skin, sh = mix(s, '#3A2418', 0.28);
+    var back = '', front = '';
+    if(lk.style === 'short'){
+      front = '<path d="M35.4,46 C34,32.5 40.5,26 50,26 C59.5,26 66,32.5 64.6,46 C63.4,39.5 59.5,35 50,35.2 C40.5,35 36.6,39.5 35.4,46Z" fill="' + h + '"/>';
+    } else if(lk.style === 'side'){
+      front = '<path d="M35.2,46.5 C33,31 42,25 51,25.2 C61,25.5 67.2,32 64.8,45.5 C62.5,37.5 57,33.2 47.5,34.4 C42,35.2 37.5,39.5 35.2,46.5Z" fill="' + h + '"/>' +
+              '<path d="M44,34.6 C50,30.6 58.5,31 63.2,37" stroke="' + mix(h, '#ffffff', 0.18) + '" stroke-width="1.1" fill="none" stroke-linecap="round"/>' +
+              '<path d="M60,33.5 C62,34.5 63.5,36 64,38" stroke="#8C8580" stroke-width="1" fill="none" opacity=".7"/>';
+    } else if(lk.style === 'long'){
+      back = '<path d="M32.4,50 C30,31 40,23.4 50,23.4 C61,23.4 70,31 67.6,50 C68.4,60 66.5,68 62.5,74 L37.5,74 C33.5,68 31.6,60 32.4,50Z" fill="' + h + '"/>';
+      front = '<path d="M35.4,45 C36.4,30.5 44.5,27.2 51,27.6 C58.5,28 64,33 64.6,44 C58,35.8 46.5,34.6 35.4,45Z" fill="' + h + '"/>';
+    } else if(lk.style === 'bun'){
+      back = '<circle cx="50" cy="24.5" r="7.5" fill="' + h + '"/>';
+      front = '<path d="M35.4,45.5 C35,32 42,27 50,27 C58,27 65,32 64.6,45.5 C62.4,37.5 57,34.4 50,34.6 C43,34.4 37.6,37.5 35.4,45.5Z" fill="' + h + '"/>' +
+              '<path d="M50,27.2 C47,30 46,32.5 46.4,35" stroke="' + mix(h, '#ffffff', 0.15) + '" stroke-width=".9" fill="none"/>';
+    }
+    var glasses = lk.glasses ? '<g fill="rgba(255,255,255,.06)" stroke="#2A2622" stroke-width="1.1"><circle cx="44.2" cy="47.4" r="4"/><circle cx="55.8" cy="47.4" r="4"/></g><path d="M48.2,47.2 H51.8" stroke="#2A2622" stroke-width="1.1"/>' : '';
+    return '<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+      '<defs>' +
+        '<radialGradient id="' + id + 'b" cx="50%" cy="28%" r="80%"><stop offset="0" stop-color="' + mix(d.tint, '#ffffff', 0.12) + '"/><stop offset=".55" stop-color="' + mix(d.tint, '#10161D', 0.45) + '"/><stop offset="1" stop-color="#0E141A"/></radialGradient>' +
+        '<linearGradient id="' + id + 'c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FDFCF9"/><stop offset="1" stop-color="#CDD3D8"/></linearGradient>' +
+        '<radialGradient id="' + id + 's" cx="42%" cy="38%" r="70%"><stop offset="0" stop-color="' + mix(s, '#ffffff', 0.12) + '"/><stop offset="1" stop-color="' + s + '"/></radialGradient>' +
+        '<clipPath id="' + id + 'k"><circle cx="50" cy="50" r="50"/></clipPath>' +
+      '</defs>' +
+      '<g clip-path="url(#' + id + 'k)">' +
+        '<rect width="100" height="100" fill="url(#' + id + 'b)"/>' +
+        '<circle cx="50" cy="44" r="30" fill="#ffffff" opacity=".05"/>' +
+        back +
+        '<path d="M43.6,57 H56.4 V72 Q50,77 43.6,72Z" fill="' + sh + '"/>' +
+        '<path d="M43,70 L50,88 L57,70Z" fill="' + lk.scrub + '"/>' +
+        '<path d="M11,104 C12,83 27,73.5 43.4,70.4 L50,87 L56.6,70.4 C73,73.5 88,83 89,104Z" fill="url(#' + id + 'c)"/>' +
+        '<path d="M43.4,70.4 L47,82 L42.5,88.5 M56.6,70.4 L53,82 L57.5,88.5" stroke="rgba(20,30,40,.18)" stroke-width="1" fill="none"/>' +
+        '<path d="M24,100 V92 M76,100 V92" stroke="rgba(20,30,40,.1)" stroke-width="1"/>' +
+        '<ellipse cx="35.6" cy="48" rx="2.6" ry="4" fill="' + sh + '"/><ellipse cx="64.4" cy="48" rx="2.6" ry="4" fill="' + sh + '"/>' +
+        '<ellipse cx="50" cy="46" rx="14.2" ry="16.6" fill="url(#' + id + 's)"/>' +
+        front +
+        '<path d="M41.4,42.6 Q44.2,41 47,42.4 M53,42.4 Q55.8,41 58.6,42.6" stroke="' + h + '" stroke-width="1.2" fill="none" stroke-linecap="round"/>' +
+        '<circle cx="44.2" cy="47.4" r="1.25" fill="#211A17"/><circle cx="55.8" cy="47.4" r="1.25" fill="#211A17"/>' +
+        '<path d="M50,48.5 Q48.9,52.2 50.9,52.8" stroke="' + sh + '" stroke-width=".9" fill="none" stroke-linecap="round"/>' +
+        '<path d="M46.3,55.6 Q50,58.4 53.7,55.6" stroke="#7A3F36" stroke-width="1.15" fill="none" stroke-linecap="round"/>' +
+        '<ellipse cx="42.4" cy="53" rx="2.6" ry="1.5" fill="#E08D7A" opacity=".18"/><ellipse cx="57.6" cy="53" rx="2.6" ry="1.5" fill="#E08D7A" opacity=".18"/>' +
+        glasses +
+        '<path d="M41.8,71.2 C35.6,80 36.6,90 43.6,93.4" stroke="#2B3440" stroke-width="2.2" fill="none" stroke-linecap="round"/>' +
+        '<path d="M58.2,71.2 C64.8,79 65.8,86 63.4,90.4" stroke="#2B3440" stroke-width="2.2" fill="none" stroke-linecap="round"/>' +
+        '<circle cx="62.6" cy="93.4" r="3.6" fill="url(#gGoldR)"/><circle cx="62.6" cy="93.4" r="1.9" fill="#2B3440"/>' +
+        '<circle cx="43.6" cy="93.4" r="1.4" fill="url(#gGoldR)"/>' +
+      '</g></svg>';
+  }
+
+  function avatar(d, size){
+    var inner = d.photo ? '<img src="' + d.photo + '" alt="">' : portraitSvg(d);
+    return '<div class="avatar" style="width:' + size + 'px;height:' + size + 'px;">' + inner + '</div>';
+  }
+
+  function flagSvg(){
+    return '<svg viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect width="30" height="6.67" fill="#FF9933"/><rect y="13.33" width="30" height="6.67" fill="#138808"/><circle cx="15" cy="10" r="2.6" fill="none" stroke="#000080" stroke-width=".7"/><circle cx="15" cy="10" r=".5" fill="#000080"/></svg>';
+  }
+
+  function telInput(id, val){
+    return '<div class="tel"><span class="cc">' + flagSvg() + '<span>+91</span></span>' +
+      '<input id="' + id + '" type="tel" inputmode="numeric" autocomplete="tel-national" placeholder="' + esc(t('mobile_ph')) + '" value="' + esc(val) + '" data-bind="bookingMobile" data-digits="1"></div>';
+  }
+
+  function ecgPath(w, base, beats, amp){
+    amp = amp || 1;
+    var bw = w / beats, d = 'M0,' + base;
+    for(var i = 0; i < beats; i++){
+      var x0 = i * bw, s = bw / 100;
+      var X = function(v){ return (x0 + v * s).toFixed(1); };
+      var Y = function(v){ return (base + v * amp).toFixed(1); };
+      d += ' L' + X(16) + ',' + Y(0) + ' Q' + X(22) + ',' + Y(-9) + ' ' + X(28) + ',' + Y(0) +
+           ' L' + X(40) + ',' + Y(0) + ' L' + X(44) + ',' + Y(6) + ' L' + X(48) + ',' + Y(-56) +
+           ' L' + X(52) + ',' + Y(18) + ' L' + X(56) + ',' + Y(0) + ' L' + X(64) + ',' + Y(0) +
+           ' Q' + X(74) + ',' + Y(-16) + ' ' + X(84) + ',' + Y(0) + ' L' + X(100) + ',' + Y(0);
+    }
+    return d;
+  }
+
+  function crossPath(size){
+    var a = size / 6, b = size / 2;
+    return 'M' + (-a) + ',' + (-b) + 'h' + (2 * a) + 'v' + (b - a) + 'h' + (b - a) + 'v' + (2 * a) + 'h' + (a - b) + 'v' + (b - a) + 'h' + (-2 * a) + 'v' + (a - b) + 'h' + (a - b) + 'v' + (-2 * a) + 'h' + (b - a) + 'z';
+  }
+
+  function stethoscopeSvg(){
+    var tube = 'M160,150 C160,196 150,222 118,244 C82,268 70,312 104,338 C138,362 200,352 216,318 C222,304 226,290 232,276';
+    return '<svg class="steth" viewBox="0 0 320 380" aria-hidden="true">' +
+      '<path class="draw" pathLength="1" style="--d:.15s" d="M112,34 C106,74 116,114 160,144" stroke="url(#gGold)" stroke-width="6" fill="none" stroke-linecap="round"/>' +
+      '<path class="draw" pathLength="1" style="--d:.15s" d="M208,34 C214,74 204,114 160,144" stroke="url(#gGold)" stroke-width="6" fill="none" stroke-linecap="round"/>' +
+      '<ellipse cx="112" cy="24" rx="8" ry="11" fill="url(#gGoldR)"/><ellipse cx="112" cy="18" rx="5" ry="4" fill="#1B232C"/>' +
+      '<ellipse cx="208" cy="24" rx="8" ry="11" fill="url(#gGoldR)"/><ellipse cx="208" cy="18" rx="5" ry="4" fill="#1B232C"/>' +
+      '<rect x="152" y="140" width="16" height="16" rx="5" fill="url(#gGoldR)"/>' +
+      '<path class="draw" pathLength="1" style="--d:.55s" d="' + tube + '" stroke="#000" stroke-opacity=".35" stroke-width="13" fill="none" stroke-linecap="round" filter="url(#fSoft)" transform="translate(4,8)"/>' +
+      '<path class="draw" pathLength="1" style="--d:.5s" d="' + tube + '" stroke="url(#gTube)" stroke-width="11" fill="none" stroke-linecap="round"/>' +
+      '<path class="draw" pathLength="1" style="--d:.5s" d="' + tube + '" stroke="rgba(255,255,255,.16)" stroke-width="2.4" fill="none" stroke-linecap="round" transform="translate(-2,-2)"/>' +
+      '<path d="M232,276 L243,261" stroke="url(#gGold)" stroke-width="10" stroke-linecap="round"/>' +
+      '<g>' +
+        '<circle class="chest-ring" cx="262" cy="226" r="40" fill="none" stroke="#D4B27A" stroke-width="1.2"/>' +
+        '<circle class="chest-ring" style="animation-delay:1.2s" cx="262" cy="226" r="40" fill="none" stroke="#D4B27A" stroke-width="1.2"/>' +
+        '<circle cx="262" cy="226" r="40" fill="url(#gGold)" stroke="rgba(255,244,220,.55)" stroke-width="1"/>' +
+        '<circle cx="262" cy="226" r="34" fill="#0B1015"/>' +
+        '<circle cx="262" cy="226" r="30" fill="url(#gDia)"/>' +
+        '<g transform="translate(250,214)"><path class="beat" d="M12 21s-7.5-4.6-9.5-9.3C1.1 8.3 3.2 4.5 7 4.5c2.1 0 3.6 1.2 5 3 1.4-1.8 2.9-3 5-3 3.8 0 5.9 3.8 4.5 7.2C19.5 16.4 12 21 12 21z" fill="#C1666B" opacity=".9"/></g>' +
+        '<ellipse cx="250" cy="212" rx="12" ry="6" fill="#fff" opacity=".07" transform="rotate(-30 250 212)"/>' +
+      '</g>' +
+    '</svg>';
+  }
+
+  function particles(){
+    var P = [[8,22,14,0],[84,18,10,-4],[76,62,16,-8],[12,70,12,-2],[48,86,9,-6]];
+    return '<div class="particles">' + P.map(function(p){
+      return '<span style="left:' + p[0] + '%;top:' + p[1] + '%;width:' + p[2] + 'px;height:' + p[2] + 'px;animation-delay:' + p[3] + 's"><svg viewBox="-6 -6 12 12"><path d="M0,-5V5M-5,0H5" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg></span>';
+    }).join('') + '</div>';
+  }
+
+  function ecgSvg(){
+    var d = ecgPath(400, 88, 4);
+    return '<svg viewBox="0 0 400 150" class="ecg" aria-hidden="true">' +
+      '<defs><pattern id="eg1" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M10 0H0V10" fill="none" stroke="rgba(212,178,122,.06)"/></pattern>' +
+      '<pattern id="eg2" width="50" height="50" patternUnits="userSpaceOnUse"><path d="M50 0H0V50" fill="none" stroke="rgba(212,178,122,.13)"/></pattern></defs>' +
+      '<rect width="400" height="150" fill="url(#eg1)"/><rect width="400" height="150" fill="url(#eg2)"/>' +
+      '<path id="ecg-glow" d="' + d + '" pathLength="1" fill="none" stroke="#D4B27A" stroke-width="6" opacity=".45" filter="url(#fSoft)" style="stroke-dasharray:1;stroke-dashoffset:1"/>' +
+      '<path id="ecg-line" d="' + d + '" pathLength="1" fill="none" stroke="#E2C99A" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" style="stroke-dasharray:1;stroke-dashoffset:1"/>' +
+      '<circle id="ecg-halo" r="12" fill="#E2C99A" opacity=".22" cx="0" cy="88"/>' +
+      '<circle id="ecg-dot" r="4" fill="#FFF6E2" cx="0" cy="88"/>' +
+    '</svg>';
+  }
+
+  function heartBanner(){
+    var d = ecgPath(360, 96, 3, 0.9);
+    return '<svg viewBox="0 0 360 150" class="banner-svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+      '<rect width="360" height="150" fill="url(#pGrid)"/>' +
+      '<circle cx="300" cy="44" r="90" fill="#D4B27A" opacity=".08"/>' +
+      '<path d="' + d + '" fill="none" stroke="rgba(212,178,122,.16)" stroke-width="1.5"/>' +
+      '<path d="' + d + '" pathLength="1" class="ecg-run" fill="none" stroke="#E2C99A" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>' +
+      '<g transform="translate(300,48)">' +
+        '<circle r="26" class="ping" fill="none" stroke="#D4B27A" stroke-width="1.2"/>' +
+        '<circle r="24" fill="url(#gGoldR)"/>' +
+        '<path d="' + crossPath(22) + '" fill="#1A140A"/>' +
+      '</g>' +
+    '</svg>';
+  }
+
+  function clinicBanner(c){
+    var win = [[16,56],[96,56],[16,84],[96,84]].map(function(w){
+      return '<rect x="' + w[0] + '" y="' + w[1] + '" width="16" height="14" rx="3" fill="rgba(226,201,154,.22)" stroke="' + c.color + '" stroke-width=".8"/>';
+    }).join('');
+    return '<svg viewBox="0 0 360 150" class="banner-svg" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+      '<rect width="360" height="150" fill="url(#pGrid)"/>' +
+      '<circle cx="272" cy="150" r="130" fill="' + c.color + '" opacity=".13"/>' +
+      '<g transform="translate(206,36)">' +
+        '<path d="M-2,114 V40 L64,6 L130,40 V114Z" fill="rgba(237,231,218,.05)" stroke="' + c.color + '" stroke-width="1.5" stroke-linejoin="round"/>' +
+        win +
+        '<rect x="48" y="74" width="32" height="40" rx="4" fill="rgba(237,231,218,.08)" stroke="' + c.color + '"/>' +
+        '<g transform="translate(64,40)"><circle r="17" class="ping" fill="none" stroke="#D4B27A"/><circle r="14" fill="url(#gGoldR)"/><path d="' + crossPath(14) + '" fill="#1A140A"/></g>' +
+      '</g>' +
+      '<path d="M190,150 C196,128 204,128 206,150Z" fill="#8AA391" opacity=".5"/>' +
+      '<path d="M340,150 C344,124 356,124 358,150Z" fill="#8AA391" opacity=".4"/>' +
+    '</svg>';
+  }
+
+  function specIcon(kind){
+    var st = 'fill="none" stroke="url(#gGold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+    if(kind === 'cardio') return '<svg viewBox="0 0 32 32"><path ' + st + ' d="M16 27s-10-6-12.4-12C2 10.6 4.8 6 9.4 6c2.8 0 4.6 1.6 6.6 4 2-2.4 3.8-4 6.6-4C27.2 6 30 10.6 28.4 15 26 21 16 27 16 27z"/><path fill="none" stroke="#C1666B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M6 16h5l2-4 3 8 2-4h8"/></svg>';
+    if(kind === 'derm') return '<svg viewBox="0 0 32 32"><path ' + st + ' d="M16 4c5 6.5 8 11 8 15a8 8 0 0 1-16 0c0-4 3-8.5 8-15z"/><path ' + st + ' d="M12.5 20a3.5 3.5 0 0 0 3.5 3.5"/><path fill="none" stroke="#E2C99A" stroke-width="1.4" stroke-linecap="round" d="M26 5v4M24 7h4"/></svg>';
+    if(kind === 'paed') return '<svg viewBox="0 0 32 32"><circle ' + st + ' cx="16" cy="18" r="9"/><circle ' + st + ' cx="8.5" cy="9.5" r="3"/><circle ' + st + ' cx="23.5" cy="9.5" r="3"/><circle cx="13" cy="17" r="1.1" fill="#E2C99A"/><circle cx="19" cy="17" r="1.1" fill="#E2C99A"/><path ' + st + ' d="M13.5 21.5q2.5 2 5 0"/></svg>';
+    return '<svg viewBox="0 0 32 32"><path ' + st + ' d="M9 4v7a6 6 0 0 0 12 0V4"/><path ' + st + ' d="M15 17v3a6 6 0 0 0 12 0v-2"/><circle ' + st + ' cx="27" cy="15.5" r="2.5"/><path fill="none" stroke="#E2C99A" stroke-width="2.2" stroke-linecap="round" d="M7 4h4M19 4h4"/></svg>';
+  }
+
+  function clinicIcon(c){
+    return '<svg viewBox="0 0 26 26"><path d="M4 22V10l9-6 9 6v12" fill="none" stroke="#1A140A" stroke-width="1.8" stroke-linejoin="round"/><path d="M3 22h20" stroke="#1A140A" stroke-width="1.8" stroke-linecap="round"/><path d="' + crossPath(8) + '" transform="translate(13,14)" fill="#1A140A"/></svg>';
+  }
+
+  /* --- scroll-story step illustrations --- */
+  function illMap(){
+    var pin = function(x, y, col, delay){
+      return '<g transform="translate(' + x + ',' + y + ')">' +
+        '<circle cy="-2" r="14" class="ping" style="animation-delay:' + delay + 's" fill="' + col + '" opacity=".35"/>' +
+        '<path d="M0,0 C-9,-11 -12,-17 -12,-22 A12,12 0 1 1 12,-22 C12,-17 9,-11 0,0Z" fill="' + col + '" stroke="#0C1117" stroke-width="2"/>' +
+        '<circle cy="-22" r="4.5" fill="#0C1117"/></g>';
+    };
+    return '<svg viewBox="0 0 300 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+      '<rect width="300" height="250" fill="url(#pGrid)"/>' +
+      '<path d="M0,14 Q120,120 172,172 T300,252" stroke="rgba(122,168,180,.32)" stroke-width="8" fill="none" stroke-linecap="round"/>' +
+      '<g stroke="rgba(212,178,122,.3)" stroke-width="5" fill="none"><path d="M-10,92 L310,62"/><path d="M62,-10 L96,260"/><path d="M-10,192 L310,208"/><path d="M212,-10 L232,260"/></g>' +
+      '<path class="route" pathLength="1" d="M118,152 C132,136 140,124 172,116" stroke="#E2C99A" stroke-width="3" fill="none" stroke-linecap="round" stroke-dasharray="1"/>' +
+      '<circle cx="118" cy="152" r="20" class="ping" fill="#7AA8B4" opacity=".3"/>' +
+      '<circle cx="118" cy="152" r="7" fill="#7AA8B4" stroke="#fff" stroke-width="2.5"/>' +
+      pin(176, 116, '#C9A56B', 0) + pin(240, 74, '#8AA391', -0.8) + pin(92, 212, '#C1666B', -1.6) +
+    '</svg>';
+  }
+
+  function illDoctor(){
+    var d = doc('d4');
+    return '<svg viewBox="0 0 300 250" aria-hidden="true">' +
+      '<circle cx="150" cy="92" r="72" fill="none" stroke="url(#gGold)" stroke-width="1.2" stroke-dasharray="3 7" class="spin-slow"/>' +
+      '<circle cx="150" cy="92" r="60" fill="#D4B27A" opacity=".08"/>' +
+      portraitSvg(d).replace('<svg ', '<svg x="98" y="40" width="104" height="104" ') +
+      '<circle cx="150" cy="92" r="53" fill="none" stroke="#E2C99A" stroke-width="1.5"/>' +
+      '<text x="150" y="184" text-anchor="middle" class="svgd" font-size="19" fill="#F7F3EA">' + esc(L(d.name)) + '</text>' +
+      '<text x="150" y="204" text-anchor="middle" class="svgt" font-size="12.5" fill="#E2C99A">' + esc(L(d.spec)) + '</text>' +
+      '<g transform="translate(150,226)" class="svgt" font-size="11.5">' +
+        '<rect x="-84" y="-12" width="78" height="24" rx="12" fill="rgba(237,231,218,.06)" stroke="rgba(237,231,218,.16)"/>' +
+        '<text x="-45" y="4" text-anchor="middle" fill="rgba(237,231,218,.8)">' + d.duration + ' ' + esc(t('min')) + '</text>' +
+        '<rect x="6" y="-12" width="78" height="24" rx="12" fill="rgba(237,231,218,.06)" stroke="rgba(237,231,218,.16)"/>' +
+        '<text x="45" y="4" text-anchor="middle" fill="rgba(237,231,218,.8)">\u20b9' + d.fee + '</text>' +
+      '</g>' +
+    '</svg>';
+  }
+
+  function illCalendar(){
+    var days = nextDays(5), out = '';
+    days.forEach(function(dy, i){
+      var x = 26 + i * 52, on = i === 1;
+      out += '<rect x="' + x + '" y="20" width="44" height="54" rx="14" fill="' + (on ? 'url(#gGold)' : 'rgba(237,231,218,.05)') + '" stroke="' + (on ? 'none' : 'rgba(237,231,218,.14)') + '"/>' +
+        '<text x="' + (x + 22) + '" y="40" text-anchor="middle" class="svgt" font-size="10" fill="' + (on ? '#1A140A' : 'rgba(237,231,218,.5)') + '">' + dy.label + '</text>' +
+        '<text x="' + (x + 22) + '" y="62" text-anchor="middle" class="svgd" font-size="18" fill="' + (on ? '#1A140A' : '#F7F3EA') + '">' + dy.num + '</text>';
+    });
+    var times = ['9:00','9:25','9:50','10:15','10:40','11:05','11:30','11:55','12:20'];
+    times.forEach(function(tm, i){
+      var c = i % 3, r = Math.floor(i / 3), x = 26 + c * 86, y = 94 + r * 46;
+      var taken = i === 1 || i === 6, on = i === 4;
+      out += '<g opacity="' + (taken ? .3 : 1) + '"><rect x="' + x + '" y="' + y + '" width="76" height="36" rx="11" fill="' + (on ? 'url(#gGold)' : 'rgba(237,231,218,.05)') + '" stroke="' + (on ? 'none' : 'rgba(237,231,218,.14)') + '"/>' +
+        '<text x="' + (x + 38) + '" y="' + (y + 23) + '" text-anchor="middle" class="svgt" font-size="12.5" font-weight="' + (on ? 600 : 400) + '" fill="' + (on ? '#1A140A' : '#F7F3EA') + '">' + tm + '</text>' +
+        (taken ? '<path d="M' + (x + 20) + ',' + (y + 18) + ' h36" stroke="#F7F3EA" stroke-width="1"/>' : '') + '</g>';
+    });
+    out += '<g class="tapripple"><circle cx="150" cy="158" r="16" class="ping" fill="none" stroke="#FFF6E2" stroke-width="1.5"/></g>';
+    return '<svg viewBox="0 0 300 250" aria-hidden="true">' + out + '</svg>';
+  }
+
+  function illShield(){
+    var digits = '4821'.split('').map(function(n, i){
+      var x = 150 - 94 + i * 48;
+      return '<rect x="' + x + '" y="186" width="40" height="46" rx="12" fill="rgba(237,231,218,.05)" stroke="rgba(237,231,218,.16)"/>' +
+        '<text class="dg svgd" style="transition-delay:' + (0.5 + i * 0.18) + 's" x="' + (x + 20) + '" y="217" text-anchor="middle" font-size="22" fill="#F7F3EA">' + n + '</text>';
+    }).join('');
+    return '<svg viewBox="0 0 300 250" aria-hidden="true">' +
+      '<circle cx="150" cy="92" r="70" fill="#D4B27A" opacity=".07"/>' +
+      '<path d="M150,20 L206,40 V88 C206,126 182,150 150,164 C118,150 94,126 94,88 V40 Z" fill="rgba(212,178,122,.1)" stroke="url(#gGold)" stroke-width="2.2" stroke-linejoin="round"/>' +
+      '<path d="M150,34 L194,50 V88 C194,118 175,138 150,150 C125,138 106,118 106,88 V50 Z" fill="none" stroke="rgba(226,201,154,.25)" stroke-width="1"/>' +
+      '<path class="chk" pathLength="1" d="M126,92 L144,110 L176,76" stroke="#E2C99A" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1"/>' +
+      digits +
+    '</svg>';
+  }
+
+  function otpArt(){
+    return '<svg viewBox="0 0 220 170" aria-hidden="true">' +
+      '<circle cx="110" cy="85" r="70" fill="#D4B27A" opacity=".07"/>' +
+      '<circle cx="110" cy="85" r="62" class="ping" fill="none" stroke="#D4B27A" stroke-width="1"/>' +
+      '<rect x="78" y="22" width="64" height="120" rx="14" fill="rgba(237,231,218,.04)" stroke="url(#gGold)" stroke-width="2"/>' +
+      '<rect x="100" y="30" width="20" height="4" rx="2" fill="rgba(226,201,154,.4)"/>' +
+      '<rect x="86" y="54" width="48" height="26" rx="8" fill="rgba(212,178,122,.16)"/>' +
+      '<g fill="#E2C99A"><circle cx="97" cy="67" r="3"/><circle cx="106" cy="67" r="3"/><circle cx="115" cy="67" r="3"/><circle cx="124" cy="67" r="3"/></g>' +
+      '<g transform="translate(150,108)"><circle r="20" fill="url(#gGoldR)"/><path d="M-8,0 L-2,6 L9,-6" stroke="#1A140A" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>' +
+    '</svg>';
+  }
+
+  function helixSvg(){ return '<svg viewBox="0 0 300 300" aria-hidden="true"><g id="hx" transform="rotate(-22 150 150)"></g></svg>'; }
+
+  /* =========================================================
+     TOWN MAP
+     ========================================================= */
+  var MAP_BASE = { w:640, h:420, minW:180 };
+  var mapView = { x:0, y:0, w:640, h:420 };
   var mapJustDragged = false;
+  function clampMapView(){
+    mapView.w = clamp(mapView.w, MAP_BASE.minW, MAP_BASE.w);
+    mapView.h = mapView.w * (MAP_BASE.h / MAP_BASE.w);
+    mapView.x = clamp(mapView.x, 0, MAP_BASE.w - mapView.w);
+    mapView.y = clamp(mapView.y, 0, MAP_BASE.h - mapView.h);
+  }
+  function applyMapView(svg){ svg.setAttribute('viewBox', mapView.x.toFixed(1) + ' ' + mapView.y.toFixed(1) + ' ' + mapView.w.toFixed(1) + ' ' + mapView.h.toFixed(1)); }
+  function zoomMap(svg, factor, cx, cy){
+    var ow = mapView.w, oh = mapView.h;
+    if(cx === undefined){ cx = mapView.x + ow / 2; cy = mapView.y + oh / 2; }
+    var nw = clamp(ow * factor, MAP_BASE.minW, MAP_BASE.w), nh = nw * (MAP_BASE.h / MAP_BASE.w);
+    mapView.x = cx - (cx - mapView.x) * (nw / ow);
+    mapView.y = cy - (cy - mapView.y) * (nh / oh);
+    mapView.w = nw; mapView.h = nh;
+    clampMapView(); applyMapView(svg);
+  }
+  function townMapInner(){
+    var grid = '', i;
+    for(i = 0; i <= 640; i += 40) grid += '<path d="M' + i + ',0 V420" stroke="rgba(237,231,218,0.045)"/>';
+    for(i = 0; i <= 420; i += 40) grid += '<path d="M0,' + i + ' H640" stroke="rgba(237,231,218,0.045)"/>';
+    var roads = ROADS.map(function(r){
+      return '<path d="' + r.d + '" stroke="rgba(212,178,122,0.1)" stroke-width="9" fill="none"/><path d="' + r.d + '" stroke="rgba(212,178,122,0.42)" stroke-width="3" fill="none"/>' +
+        '<text x="' + r.lx + '" y="' + r.ly + '" class="svgt" font-size="9.5" fill="rgba(237,231,218,0.5)">' + esc(L(r.label)) + '</text>';
+    }).join('');
+    var lms = LANDMARKS.map(function(l){
+      return '<g transform="translate(' + l.x + ',' + l.y + ')"><circle r="4" fill="#0C1117" stroke="#8AA391" stroke-width="1.5"/>' +
+        '<text x="8" y="4" class="svgt" font-size="9.5" font-weight="600" fill="rgba(237,231,218,0.78)">' + esc(L(l.label)) + '</text></g>';
+    }).join('');
+    var pins = DATA.clinics.map(function(c){
+      return '<g class="map-pin" data-act="pick-clinic-map" data-id="' + c.id + '" transform="translate(' + c.x + ',' + c.y + ')">' +
+        '<circle class="ping" r="18" fill="' + c.color + '" opacity=".4"/>' +
+        '<path d="M0,0 C-7,-9 -9,-13 -9,-17 A9,9 0 1 1 9,-17 C9,-13 7,-9 0,0Z" fill="' + c.color + '" stroke="#0C1117" stroke-width="2"/>' +
+        '<circle cy="-17" r="3.4" fill="#0C1117"/></g>';
+    }).join('');
+    return '<rect x="-40" y="-40" width="720" height="500" fill="#0C1117"/>' + grid +
+      '<path d="M20,20 Q260,160 300,300 T560,410" stroke="rgba(122,168,180,0.36)" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+      '<text x="360" y="330" class="svgt" font-size="9.5" fill="rgba(122,168,180,0.7)">' + esc(L(STREAM)) + '</text>' +
+      roads + lms + pins;
+  }
+
+  /* =========================================================
+     SCREENS
+     ========================================================= */
+  var R = {};
+
+  R.splash = function(){
+    var d3 = doc('d3');
+    var steps = [illMap(), illDoctor(), illCalendar(), illShield()];
+    var assures = [['ic-lock','assure1'],['ic-rupee','assure2'],['ic-clock','assure3']];
+    return '' +
+    '<section class="sc" id="sc-hero"><div class="pin">' +
+      '<div class="glow" id="h-glow"></div>' + particles() +
+      '<div class="hero-copy" id="h-copy">' +
+        '<h1>' + t('hero_title') + '</h1>' +
+        '<p>' + t('hero_sub') + '</p>' +
+        '<div class="hero-actions"><button class="btn btn-primary btn-pill" data-act="role-patient">' + t('hero_cta') + '</button></div>' +
+      '</div>' +
+      '<div class="hero-art" id="h-art">' + stethoscopeSvg() + '</div>' +
+      '<div class="fwrap" id="h-ca" style="left:14px;top:50%"><div class="fcard">' + avatar(d3, 36) +
+        '<div><div class="fc-t">' + esc(L(d3.name)) + '</div><div class="fc-s">' + esc(L(d3.spec)) + '</div></div></div></div>' +
+      '<div class="fwrap" id="h-cb" style="right:14px;bottom:4%"><div class="fcard" style="animation-delay:-3s"><span class="okdot"><svg><use href="#ic-check"/></svg></span>' +
+        '<div><div class="fc-t">' + t('appt_confirmed') + '</div><div class="fc-s">' + t('today_at', { time:'11:25 AM' }) + '</div></div></div></div>' +
+      '<div class="scroll-hint" id="h-hint"><span>' + t('scroll_hint') + '</span><i></i></div>' +
+    '</div></section>' +
+
+    '<section class="sc" id="sc-pulse"><div class="pin pulse-pin">' +
+      '<h2 class="sec-h lit" id="p-title">' + words(t('pulse_title')) + '</h2>' +
+      '<div class="ecg-wrap">' + ecgSvg() + '</div>' +
+      '<div class="readout">' +
+        '<div class="bpm"><svg viewBox="0 0 24 24"><use href="#ic-heart"/></svg><b id="p-bpm">0</b><span>bpm</span></div>' +
+        '<div class="spo"><span>SpO\u2082</span><b id="p-spo">0%</b></div>' +
+      '</div>' +
+      '<p class="fade-p" id="p-body">' + t('pulse_body') + '</p>' +
+    '</div></section>' +
+
+    '<section class="sc" id="sc-steps"><div class="pin steps-pin">' +
+      '<h2 class="sec-h">' + t('steps_title') + '</h2>' +
+      '<div class="stage glass">' + steps.map(function(s, i){ return '<div class="ill' + (i ? '' : ' on') + '">' + s + '</div>'; }).join('') + '</div>' +
+      '<div class="stxt">' + [1,2,3,4].map(function(i){ return '<div class="' + (i === 1 ? 'on' : '') + '"><h3>' + t('step' + i + '_t') + '</h3><p>' + t('step' + i + '_d') + '</p></div>'; }).join('') + '</div>' +
+      '<div class="bars">' + '<i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i>' + '</div>' +
+    '</div></section>' +
+
+    '<section class="sc" id="sc-care"><div class="pin care-pin">' +
+      '<div class="helix-wrap">' + helixSvg() + '</div>' +
+      '<h2 class="sec-h" id="c-title">' + t('care_title') + '</h2>' +
+      '<div class="assures">' + assures.map(function(a){
+        return '<div class="assure"><span class="aic"><svg><use href="#' + a[0] + '"/></svg></span><span>' + t(a[1]) + '</span></div>';
+      }).join('') + '</div>' +
+    '</div></section>' +
+
+    '<section class="specs" id="sc-specs">' +
+      '<div class="specs-head rv"><h2 class="sec-h">' + t('spec_title') + '</h2><p>' + t('spec_body') + '</p></div>' +
+      '<div class="track" id="s-track">' + DATA.doctors.map(function(d){
+        return '<button class="tap tile glass" style="--tint:' + d.tint + '" data-act="tile-doctor" data-id="' + d.id + '">' +
+          '<div class="ticon">' + specIcon(d.icon) + '</div>' +
+          '<h4>' + esc(L(d.spec)) + '</h4>' +
+          '<div class="tdoc">' + avatar(d, 36) + '<div>' + esc(L(d.name)) + '<b>' + t('fee_from', { n:d.fee }) + '</b></div></div>' +
+        '</button>';
+      }).join('') + '</div>' +
+    '</section>' +
+
+    '<section class="choose">' +
+      '<h2 class="sec-h rv">' + t('choose_title') + '</h2>' +
+      roleCard('role-patient', 'ic-user', t('role_patient_t'), t('role_patient_d'), 0) +
+      roleCard('role-clinic', 'ic-clinic', t('role_clinic_t'), t('role_clinic_d'), 90) +
+    '</section>' +
+    '<footer class="foot"><span class="mono"><span>A</span></span>' + t('footer') + '</footer>';
+  };
+
+  function roleCard(act, icon, title, desc, delay){
+    return '<button class="tap role glass rv" style="--d:' + delay + 'ms" data-act="' + act + '">' +
+      '<span class="ric"><span><svg><use href="#' + icon + '"/></svg></span></span>' +
+      '<span><span class="rt" style="display:block">' + title + '</span><span class="rd" style="display:block">' + desc + '</span></span>' +
+      '<svg class="go"><use href="#ic-chev-r"/></svg></button>';
+  }
+
+  R.signinPatient = function(){
+    return '<div class="screen">' +
+      '<div class="ptitle rv"><h1>' + t('signin_patient_h') + '</h1><div class="sub">' + t('patient_access') + '</div></div>' +
+      '<div class="pbody">' +
+        '<div class="banner glass rv" style="--d:60ms">' + heartBanner() + '</div>' +
+        '<div class="field rv" style="--d:120ms"><label for="p-mobile">' + t('mobile') + '</label>' + telInput('p-mobile', S.bookingMobile) + '</div>' +
+        '<div class="field rv" style="--d:180ms"><label for="p-name">' + t('fullname') + '</label><input class="input" id="p-name" type="text" autocomplete="name" placeholder="' + esc(t('fullname_ph')) + '" value="' + esc(S.patientName) + '" data-bind="patientName"></div>' +
+      '</div>' +
+      '<div class="bar"><button class="btn btn-primary" data-act="patient-continue">' + t('continue') + '</button></div>' +
+    '</div>';
+  };
+
+  R.signinClinic = function(){
+    var c = clinic(ADMIN_CLINIC);
+    return '<div class="screen">' +
+      '<div class="ptitle rv"><h1>' + t('signin_clinic_h') + '</h1><div class="sub">' + t('clinic_admin', { clinic: esc(L(c.name)) }) + '</div></div>' +
+      '<div class="pbody">' +
+        '<div class="banner glass rv" style="--d:60ms">' + clinicBanner(c) + '</div>' +
+        '<div class="field rv" style="--d:120ms"><label for="c-email">' + t('work_email') + '</label><input class="input" id="c-email" type="email" autocomplete="username" placeholder="admin@golebazarclinic.in"></div>' +
+        '<div class="field rv" style="--d:180ms"><label for="c-pass">' + t('password') + '</label><input class="input" id="c-pass" type="password" autocomplete="current-password" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"></div>' +
+      '</div>' +
+      '<div class="bar"><button class="btn btn-primary" data-act="clinic-continue">' + t('signin_console') + '</button></div>' +
+    '</div>';
+  };
+
+  R.location = function(){
+    var loc = t('default_loc');
+    return '<div class="screen">' +
+      '<div class="ptitle rv"><h1>' + t('find_clinic') + '</h1><div class="sub">' + t('near', { loc: loc }) + '</div></div>' +
+      '<div class="pbody">' +
+        '<div class="search-box rv" style="--d:40ms"><svg><use href="#ic-search"/></svg><input id="loc-input" placeholder="' + esc(t('enter_location')) + '" value="' + esc(loc) + '" aria-label="' + esc(t('enter_location')) + '"></div>' +
+        '<div class="chip-row rv" style="--d:80ms"><span class="chip on">' + t('chip_all') + '</span><span class="chip">' + t('chip_today') + '</span><span class="chip">' + t('chip_2km') + '</span><span class="chip">' + t('chip_top') + '</span></div>' +
+        '<div class="map-panel rv" style="--d:120ms">' +
+          '<svg id="townmap" viewBox="0 0 640 420" preserveAspectRatio="xMidYMid meet" aria-label="' + esc(t('pinch_hint')) + '">' + townMapInner() + '</svg>' +
+          '<div class="map-controls"><button data-map="in" aria-label="Zoom in">+</button><button data-map="out" aria-label="Zoom out">\u2212</button></div>' +
+          '<div class="map-badge"><svg><use href="#ic-pin"/></svg>' + t('clinics_in', { n: DATA.clinics.length }) + '</div>' +
+        '</div>' +
+        '<div class="list-label rv"><h3>' + t('clinics_near') + '</h3><span>' + t('results', { n: DATA.clinics.length }) + '</span></div>' +
+        '<div class="stack">' + DATA.clinics.map(function(c, i){
+          var docs = doctorsOf(c);
+          var minDur = Math.min.apply(null, docs.map(function(d){ return d.duration; }));
+          return '<button class="tap ccard glass rv" style="--d:' + (i * 70) + 'ms" data-act="pick-clinic" data-id="' + c.id + '">' +
+            '<span class="cic" style="background:' + c.color + '">' + clinicIcon(c) + '</span>' +
+            '<span class="cb"><span class="cn" style="display:block">' + esc(L(c.name)) + '</span>' +
+            '<span class="cm" style="display:block">' + esc(L(c.area)) + '</span>' +
+            '<span class="cr"><span><span class="status-dot"></span>' + t('open_now') + '</span><span>' + doctorsLabel(docs.length) + '</span><span>' + t('from_slots', { n:minDur }) + '</span></span></span>' +
+          '</button>';
+        }).join('') + '</div>' +
+      '</div>' +
+    '</div>';
+  };
+
+  R.clinicDetail = function(){
+    var c = clinic(S.selectedClinicId), docs = doctorsOf(c);
+    return '<div class="screen">' +
+      '<div class="ptitle rv"><h1>' + esc(L(c.name)) + '</h1><div class="sub">' + esc(L(c.area)) + '</div></div>' +
+      '<div class="pbody">' +
+        '<div class="banner glass rv" style="--d:60ms">' + clinicBanner(c) +
+          '<div class="banner-cap"><div class="bc-t">' + doctorsLabel(docs.length) + '</div><div class="bc-s"><span class="status-dot"></span>' + t('open_now') + '</div></div></div>' +
+        '<div class="list-label rv"><h3>' + t('available_doctors') + '</h3></div>' +
+        '<div class="stack">' + docs.map(function(d, i){
+          return '<button class="tap dcard glass rv" style="--d:' + (i * 80) + 'ms" data-act="pick-doctor" data-id="' + d.id + '">' + avatar(d, 72) +
+            '<span style="flex:1;min-width:0"><span class="dn" style="display:block">' + esc(L(d.name)) + '</span>' +
+            '<span class="ds" style="display:block">' + esc(L(d.spec)) + '</span>' +
+            '<span class="db" style="display:block">' + esc(L(d.bio)) + '</span>' +
+            '<span class="df"><span>' + d.duration + ' ' + t('min') + '</span><span>\u20b9' + d.fee + '</span></span></span>' +
+          '</button>';
+        }).join('') + '</div>' +
+      '</div>' +
+    '</div>';
+  };
+
+  R.doctor = function(){
+    var d = doc(S.selectedDoctorId), c = clinicOf(d), dates = nextDays(7);
+    if(!S.selectedDateKey) S.selectedDateKey = dates[0].key;
+    var slots = buildSlots(d, S.selectedDateKey);
+    var anyOpen = slots.some(function(s){ return !s.taken; });
+    return '<div class="screen">' +
+      '<div class="dhero rv"><div class="dring">' + avatar(d, 120) + '</div>' +
+        '<h1>' + esc(L(d.name)) + '</h1><div class="dspec">' + esc(L(d.spec)) + '</div><div class="dclinic">' + esc(L(c.name)) + '</div>' +
+        '<div class="facts"><span><svg><use href="#ic-clock"/></svg>' + d.duration + ' ' + t('min') + '</span><span>\u20b9' + d.fee + '</span></div>' +
+        '<p class="dbio">' + esc(L(d.bio)) + '</p>' +
+      '</div>' +
+      '<div class="pbody">' +
+        '<div class="sect rv">' + t('select_date') + '</div>' +
+        '<div class="date-strip rv" style="--d:60ms">' + dates.map(function(dt){
+          return '<button class="tap date-pill' + (dt.key === S.selectedDateKey ? ' on' : '') + '" data-act="pick-date" data-key="' + dt.key + '" aria-pressed="' + (dt.key === S.selectedDateKey) + '"><div class="d">' + dt.label + '</div><div class="n">' + dt.num + '</div></button>';
+        }).join('') + '</div>' +
+        '<div class="dur-note rv"><svg><use href="#ic-clock"/></svg>' + t('dur_note', { n:d.duration }) + '</div>' +
+        '<div class="sect rv">' + t('available_times') + '</div>' +
+        (anyOpen ? '<div class="slot-grid rv" style="--d:60ms">' + slots.map(function(s){
+          var on = S.selectedSlot && S.selectedSlot.minutes === s.minutes;
+          return '<button class="tap slot' + (on ? ' on' : '') + '" data-act="pick-slot" data-min="' + s.minutes + '"' + (s.taken ? ' disabled' : '') + '>' + s.label + '</button>';
+        }).join('') + '</div>' : '<div class="empty">' + t('no_slots') + '</div>') +
+      '</div>' +
+      '<div class="bar"><div><div class="price">' + t('fee') + '</div><div class="amt">\u20b9' + d.fee + '</div></div>' +
+        '<button class="btn btn-primary" ' + (S.selectedSlot ? '' : 'disabled') + ' data-act="go-confirm">' + (S.selectedSlot ? t('book_time', { time: fmtTime(S.selectedSlot.minutes) }) : t('choose_time')) + '</button></div>' +
+    '</div>';
+  };
+
+  function summaryCard(d){
+    var c = clinicOf(d);
+    return '<div class="glass summary">' +
+      '<div class="sh">' + avatar(d, 52) + '<div><div class="n">' + esc(L(d.name)) + '</div><div class="s">' + esc(L(d.spec)) + '</div></div></div>' +
+      '<div class="row"><span>' + t('clinic') + '</span><b>' + esc(L(c.name)) + '</b></div>' +
+      '<div class="row"><span>' + t('date') + '</span><b>' + fmtDateLong(S.selectedDateKey) + '</b></div>' +
+      '<div class="row"><span>' + t('time') + '</span><b>' + fmtTime(S.selectedSlot.minutes) + ', ' + d.duration + ' ' + t('min') + '</b></div>' +
+      '<div class="row"><span>' + t('fee_short') + '</span><b>' + t('payable', { n:d.fee }) + '</b></div>' +
+    '</div>';
+  }
+
+  R.confirm = function(){
+    var d = doc(S.selectedDoctorId);
+    return '<div class="screen">' +
+      '<div class="ptitle rv"><h1>' + t('confirm_booking') + '</h1><div class="sub">' + t('confirm_sub') + '</div></div>' +
+      '<div class="pbody">' +
+        '<div class="rv" style="--d:60ms">' + summaryCard(d) + '</div>' +
+        '<div class="field rv" style="--d:120ms"><label for="confirm-mobile">' + t('mobile') + '</label>' + telInput('confirm-mobile', S.bookingMobile) + '</div>' +
+        '<p class="hint-txt rv" style="--d:160ms">' + t('otp_note') + '</p>' +
+      '</div>' +
+      '<div class="bar"><button class="btn btn-primary" data-act="send-otp">' + t('send_code') + '</button></div>' +
+    '</div>';
+  };
+
+  R.otp = function(){
+    return '<div class="screen">' +
+      '<div class="ptitle rv"><h1>' + t('enter_code') + '</h1><div class="sub">' + t('sent_to', { m: fmtPhone(S.bookingMobile) }) + '</div></div>' +
+      '<div class="pbody">' +
+        '<div class="otp-art rv" style="--d:60ms">' + otpArt() + '</div>' +
+        '<div class="otp-boxes rv" style="--d:120ms">' + [0,1,2,3].map(function(i){
+          return '<input class="input otp-d" maxlength="1" inputmode="numeric" autocomplete="' + (i ? 'off' : 'one-time-code') + '" aria-label="Digit ' + (i + 1) + '">';
+        }).join('') + '</div>' +
+        '<p class="hint-txt rv" style="text-align:center;--d:160ms">' + t('no_code') + ' <button class="link" data-act="resend-otp">' + t('resend') + '</button></p>' +
+      '</div>' +
+      '<div class="bar"><button class="btn btn-primary" data-act="confirm-booking">' + t('confirm_appt') + '</button></div>' +
+    '</div>';
+  };
+
+  R.success = function(){
+    var d = doc(S.selectedDoctorId);
+    return '<div class="screen"><div class="success-body">' +
+      '<div class="okwrap"><span class="okr"></span><span class="okr r2"></span><div class="okc"><svg viewBox="0 0 24 24"><path class="draw" style="--d:.35s" pathLength="1" d="M20 6L9 17l-5-5"/></svg></div></div>' +
+      '<h1>' + t('booked') + '</h1>' +
+      '<p>' + t('booked_body', { m: fmtPhone(S.bookingMobile) }) + '</p>' +
+      '<svg class="ecg-strip" viewBox="0 0 360 50" preserveAspectRatio="none" aria-hidden="true"><path d="' + ecgPath(360, 34, 3, 0.45) + '" pathLength="1" class="ecg-run" fill="none" stroke="#8AA391" stroke-width="1.8" stroke-linejoin="round"/></svg>' +
+      summaryCard(d) +
+      '<button class="btn btn-outline btn-sm" data-act="restart">' + t('back_start') + '</button>' +
+    '</div></div>';
+  };
+
+  R.adminDashboard = function(){
+    var c = clinic(ADMIN_CLINIC), docs = doctorsOf(c);
+    if(!S.adminDoctorId) S.adminDoctorId = docs[0].id;
+    var d = doc(S.adminDoctorId);
+    var fillPct = ((d.fee - 100) / 500 * 100).toFixed(0) + '%';
+    return '<div class="screen">' +
+      '<div class="admin-who rv"><div class="w"><div class="avatar initials" style="width:44px;height:44px;font-size:16px;">GF</div>' +
+        '<div><div class="n">' + esc(L(c.name)) + '</div><div class="c">' + t('admin_console') + '</div></div></div>' +
+        '<button class="signout" data-act="admin-signout">' + t('signout') + '</button></div>' +
+      '<div class="pbody">' +
+        '<div class="seg rv">' + docs.map(function(x){
+          return '<button class="' + (x.id === S.adminDoctorId ? 'on' : '') + '" data-act="admin-pick-doc" data-id="' + x.id + '">' + esc(L(x.name)) + '</button>';
+        }).join('') + '</div>' +
+        '<div class="glass panel rv" style="--d:60ms">' +
+          '<h4>' + t('doctor_profile') + '</h4><div class="note">' + t('edit_note') + '</div>' +
+          '<div class="photo-row">' + avatar(d, 68) + '<label class="upload-btn"><svg><use href="#ic-camera"/></svg>' + t('upload_photo') + '<input type="file" accept="image/*" id="admin-photo" hidden></label></div>' +
+          '<div class="field" style="margin-bottom:14px"><label for="admin-name">' + t('fullname') + '</label><input class="input" id="admin-name" type="text" value="' + esc(L(d.name)) + '"></div>' +
+          '<div class="field" style="margin-bottom:14px"><label for="admin-spec">' + t('speciality') + '</label><input class="input" id="admin-spec" type="text" value="' + esc(L(d.spec)) + '"></div>' +
+          '<div class="field"><label for="admin-bio">' + t('bio_label') + '</label><textarea class="textarea" id="admin-bio">' + esc(L(d.bio)) + '</textarea></div>' +
+        '</div>' +
+        '<div class="glass panel rv">' +
+          '<h4>' + t('slot_length') + '</h4>' +
+          '<div class="dur-row">' + [10,15,25].map(function(v){
+            return '<button class="tap dur-chip' + (d.duration === v ? ' on' : '') + '" data-act="admin-dur" data-v="' + v + '"><div class="n">' + v + '</div><div class="u">' + t('min') + '</div></button>';
+          }).join('') + '</div>' +
+        '</div>' +
+        '<div class="glass panel rv">' +
+          '<h4>' + t('fee') + '</h4>' +
+          '<div class="fee-row"><input type="range" id="admin-fee" min="100" max="600" step="50" value="' + d.fee + '" style="--fill:' + fillPct + '" aria-label="' + esc(t('fee')) + '"><div class="fee-amt" id="admin-fee-label">\u20b9' + d.fee + '</div></div>' +
+          '<div class="fee-scale"><span>\u20b9100</span><span>\u20b9600</span></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="bar"><button class="btn btn-primary" data-act="admin-save">' + t('save_changes') + '</button></div>' +
+    '</div>';
+  };
+
+  /* =========================================================
+     SCROLL ENGINE (Apple-style, scroll-linked)
+     ========================================================= */
+  var scenes = [], ticking = false, hdrH = 60, helixState = null;
+  function addScene(el, mode, fn){ if(el) scenes.push({ el:el, mode:mode, fn:fn }); }
+  function requestTick(){ if(!ticking){ ticking = true; requestAnimationFrame(tick); } }
+  function tick(){
+    ticking = false;
+    var vh = window.innerHeight;
+    scenes.forEach(function(s){
+      var r = s.el.getBoundingClientRect();
+      if(r.bottom < -50 || r.top > vh + 50) return;
+      var p;
+      if(s.mode === 'pin'){
+        var total = r.height - (vh - hdrH);
+        p = total > 0 ? clamp((hdrH - r.top) / total) : 0;
+      } else {
+        p = clamp((vh - r.top) / (vh + r.height));
+      }
+      s.fn(p);
+    });
+    var hdr = document.getElementById('hdr');
+    hdr.classList.toggle('clear', S.screen === 'splash' && window.scrollY < 12);
+  }
+  window.addEventListener('scroll', requestTick, { passive:true });
+  window.addEventListener('resize', function(){ measureHeader(); requestTick(); });
+
+  function measureHeader(){
+    hdrH = document.getElementById('hdr').offsetHeight || 60;
+    document.documentElement.style.setProperty('--hdrh', hdrH + 'px');
+  }
+
+  function setupLanding(root){
+    /* hero */
+    var copy = root.querySelector('#h-copy'), art = root.querySelector('#h-art'), glow = root.querySelector('#h-glow');
+    var ca = root.querySelector('#h-ca'), cb = root.querySelector('#h-cb'), hint = root.querySelector('#h-hint');
+    addScene(root.querySelector('#sc-hero'), 'pin', function(p){
+      var e = easeOut(p);
+      copy.style.opacity = 1 - clamp(p / 0.4);
+      hint.style.opacity = 1 - clamp(p / 0.08);
+      ca.style.opacity = cb.style.opacity = 1 - clamp((p - 0.25) / 0.35);
+      art.style.opacity = 1 - clamp((p - 0.78) / 0.22);
+      glow.style.opacity = 0.6 + 0.4 * e;
+      if(!RM){
+        copy.style.transform = 'translateY(' + (-50 * p) + 'px) scale(' + (1 - 0.1 * p) + ')';
+        art.style.transform = 'translateY(' + (-70 * e) + 'px) scale(' + (1 + 0.42 * e) + ') rotate(' + (-8 * e) + 'deg)';
+        ca.style.transform = 'translate(' + (-70 * e) + 'px,' + (-40 * e) + 'px)';
+        cb.style.transform = 'translate(' + (60 * e) + 'px,' + (50 * e) + 'px)';
+        glow.style.transform = 'scale(' + (1 + 0.5 * e) + ')';
+      }
+    });
+
+    /* pulse / ECG */
+    var wordsEls = root.querySelectorAll('#p-title .w');
+    var line = root.querySelector('#ecg-line'), glowLine = root.querySelector('#ecg-glow');
+    var dot = root.querySelector('#ecg-dot'), halo = root.querySelector('#ecg-halo');
+    var bpm = root.querySelector('#p-bpm'), spo = root.querySelector('#p-spo'), pbody = root.querySelector('#p-body');
+    var len = line.getTotalLength();
+    addScene(root.querySelector('#sc-pulse'), 'pin', function(p){
+      wordsEls.forEach(function(w, i){ w.classList.toggle('on', p > 0.02 + (i / wordsEls.length) * 0.32); });
+      var q = clamp((p - 0.1) / 0.62), qe = easeOut(q);
+      line.style.strokeDashoffset = glowLine.style.strokeDashoffset = (1 - q).toFixed(4);
+      var pt = line.getPointAtLength(len * q);
+      dot.setAttribute('cx', pt.x); dot.setAttribute('cy', pt.y);
+      halo.setAttribute('cx', pt.x); halo.setAttribute('cy', pt.y);
+      halo.style.opacity = dot.style.opacity = q > 0.001 && q < 0.999 ? 1 : 0;
+      bpm.textContent = Math.round(72 * qe);
+      spo.textContent = Math.round(98 * qe) + '%';
+      pbody.classList.toggle('on', p > 0.6);
+    });
+
+    /* steps */
+    var ills = root.querySelectorAll('.ill'), txts = root.querySelectorAll('.stxt > div'), bars = root.querySelectorAll('.bars b');
+    var lastStep = 0;
+    addScene(root.querySelector('#sc-steps'), 'pin', function(p){
+      var f = p * 4, idx = Math.min(3, Math.floor(f));
+      bars.forEach(function(b, i){ b.style.transform = 'scaleX(' + clamp(f - i).toFixed(3) + ')'; });
+      if(idx !== lastStep){
+        lastStep = idx;
+        ills.forEach(function(el, i){ el.classList.toggle('on', i === idx); });
+        txts.forEach(function(el, i){ el.classList.toggle('on', i === idx); });
+      }
+    });
+
+    /* care / DNA helix */
+    var hx = root.querySelector('#hx'), NS = 'http://www.w3.org/2000/svg', rungs = [], N = 15;
+    for(var i = 0; i < N; i++){
+      var ln = document.createElementNS(NS, 'line'), a = document.createElementNS(NS, 'circle'), b = document.createElementNS(NS, 'circle');
+      ln.setAttribute('stroke', 'rgba(226,201,154,0.35)'); ln.setAttribute('stroke-width', '1.5');
+      a.setAttribute('fill', '#E2C99A'); b.setAttribute('fill', '#8AA391');
+      hx.appendChild(ln); hx.appendChild(a); hx.appendChild(b);
+      rungs.push({ ln:ln, a:a, b:b, y: 22 + i * 18.2 });
+    }
+    var strandA = document.createElementNS(NS, 'path'), strandB = document.createElementNS(NS, 'path');
+    strandA.setAttribute('fill', 'none'); strandA.setAttribute('stroke', 'url(#gGold)'); strandA.setAttribute('stroke-width', '2.2'); strandA.setAttribute('stroke-linecap', 'round');
+    strandB.setAttribute('fill', 'none'); strandB.setAttribute('stroke', 'rgba(138,163,145,0.75)'); strandB.setAttribute('stroke-width', '2.2'); strandB.setAttribute('stroke-linecap', 'round');
+    hx.insertBefore(strandB, hx.firstChild); hx.insertBefore(strandA, hx.firstChild);
+    var ctitle = root.querySelector('#c-title'), assures = root.querySelectorAll('.assure'), careScroll = 0;
+    function drawHelix(phase){
+      var da = '', db = '';
+      for(var k = 0; k <= 56; k++){
+        var yy = 22 + k * (18.2 * (N - 1) / 56), ang2 = phase + (k / 56) * (N - 1) * 0.5, s2 = Math.sin(ang2);
+        da += (k ? 'L' : 'M') + (150 + 62 * s2).toFixed(1) + ',' + yy.toFixed(1);
+        db += (k ? 'L' : 'M') + (150 - 62 * s2).toFixed(1) + ',' + yy.toFixed(1);
+      }
+      strandA.setAttribute('d', da); strandB.setAttribute('d', db);
+      rungs.forEach(function(r, i){
+        var ang = phase + i * 0.5, s = Math.sin(ang), z = Math.cos(ang);
+        var x1 = 150 + 62 * s, x2 = 150 - 62 * s;
+        r.ln.setAttribute('x1', x1.toFixed(1)); r.ln.setAttribute('x2', x2.toFixed(1));
+        r.ln.setAttribute('y1', r.y); r.ln.setAttribute('y2', r.y);
+        r.a.setAttribute('cx', x1.toFixed(1)); r.a.setAttribute('cy', r.y); r.a.setAttribute('r', (5 + 2.2 * z).toFixed(2));
+        r.a.setAttribute('opacity', (0.5 + 0.5 * (z + 1) / 2).toFixed(2));
+        r.b.setAttribute('cx', x2.toFixed(1)); r.b.setAttribute('cy', r.y); r.b.setAttribute('r', (5 - 2.2 * z).toFixed(2));
+        r.b.setAttribute('opacity', (0.5 + 0.5 * (1 - z) / 2).toFixed(2));
+      });
+    }
+    helixState = { visible:false, drift:0, draw: drawHelix, scroll:0, t0:0 };
+    drawHelix(0);
+    var careEl = root.querySelector('#sc-care');
+    addScene(careEl, 'pin', function(p){
+      helixState.scroll = p * Math.PI * 3;
+      if(RM) drawHelix(helixState.scroll);
+      if(!RM) hx.setAttribute('transform', 'rotate(' + (-22 + 30 * p).toFixed(2) + ' 150 150)');
+      ctitle.style.opacity = clamp((p - 0.04) / 0.2);
+      if(!RM) ctitle.style.transform = 'translateY(' + (20 * (1 - clamp((p - 0.04) / 0.2))) + 'px)';
+      assures.forEach(function(el, i){ el.classList.toggle('on', p > 0.28 + i * 0.14); });
+    });
+    if(!RM && 'IntersectionObserver' in window){
+      new IntersectionObserver(function(ents){
+        if(!helixState) return;
+        helixState.visible = ents[0].isIntersecting;
+        if(helixState.visible && !helixState.running){ helixState.running = true; requestAnimationFrame(helixLoop); }
+      }).observe(careEl);
+    }
+
+    /* specialties marquee */
+    var track = root.querySelector('#s-track');
+    addScene(root.querySelector('#sc-specs'), 'pass', function(p){
+      if(RM) return;
+      var max = track.scrollWidth - track.parentElement.clientWidth;
+      track.style.transform = 'translateX(' + (40 - p * (max + 80)).toFixed(1) + 'px)';
+    });
+  }
+
+  function helixLoop(ts){
+    if(!helixState || !helixState.visible || S.screen !== 'splash'){ if(helixState) helixState.running = false; return; }
+    helixState.draw(helixState.scroll + ts / 2600);
+    requestAnimationFrame(helixLoop);
+  }
+
+  var revealIO = null;
+  function setupReveals(root, instant){
+    var els = root.querySelectorAll('.rv');
+    if(instant || RM || !('IntersectionObserver' in window)){ els.forEach(function(e){ e.classList.add('in'); }); return; }
+    if(revealIO) revealIO.disconnect();
+    revealIO = new IntersectionObserver(function(ents){
+      ents.forEach(function(en){ if(en.isIntersecting){ en.target.classList.add('in'); revealIO.unobserve(en.target); } });
+    }, { rootMargin:'0px 0px -6% 0px' });
+    els.forEach(function(e){ revealIO.observe(e); });
+  }
+
+  /* =========================================================
+     RENDER + NAVIGATION
+     ========================================================= */
   var screensEl = document.getElementById('screens');
-  var toastEl = document.getElementById('toast');
-  var toastTimer = null;
+  var toastEl = document.getElementById('toast'), toastTimer = null;
   function toast(msg){
     toastEl.textContent = msg;
     toastEl.classList.add('show');
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2200);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2600);
+  }
+
+  function render(opts){
+    opts = opts || {};
+    var keepY = opts.keepScroll ? window.scrollY : 0;
+    scenes = [];
+    if(helixState) helixState.visible = false;
+    helixState = null;
+    screensEl.innerHTML = R[S.screen] ? R[S.screen]() : '';
+    var root = screensEl;
+    if(opts.keepScroll){
+      var first = root.firstElementChild;
+      if(first) first.classList.add('instant');
+      root.querySelectorAll('.hero-copy h1, .hero-copy p, .hero-actions').forEach(function(e){ e.style.animation = 'none'; });
+      root.classList.add('instant');
+    } else {
+      root.classList.remove('instant');
+    }
+    document.getElementById('hdr-back').hidden = S.screen === 'splash';
+    bind(root);
+    if(S.screen === 'splash') setupLanding(root);
+    setupReveals(root, opts.keepScroll);
+    window.scrollTo(0, keepY);
+    requestTick();
   }
 
   function go(screen, opts){
     opts = opts || {};
     if(!opts.replace) S.history.push(S.screen);
     S.screen = screen;
-    render();
+    render(opts);
   }
   function back(){
-    var prev = S.history.pop();
-    S.screen = prev || 'splash';
+    S.screen = S.history.pop() || 'splash';
     render();
   }
 
-  function avatarHtml(doc, size){
-    if(doc.photo){
-      return '<div class="avatar" style="width:'+size+'px;height:'+size+'px;"><img src="'+doc.photo+'" alt=""/></div>';
-    }
-    return '<div class="avatar" style="width:'+size+'px;height:'+size+'px;background:'+doc.tint+';">'+doc.initials+'</div>';
-  }
-
-  // ---------------- screen renderers ----------------
-  var screenRenderers = {};
-
-  screenRenderers.splash = function(){
-    return '\
-    <div class="screen-body splash" style="display:flex;flex-direction:column;">\
-      <div class="mono-lg">A</div>\
-      <h1>Auria</h1>\
-      <p>A quieter way to book time with your doctor. Choose how you would like to continue.</p>\
-      <div class="role-pick">\
-        <div class="role-card" data-act="role-patient">\
-          <div class="ic"><svg><use href="#ic-user" stroke="#D8BD8D"/></svg></div>\
-          <div><div class="t">I\u2019m booking an appointment</div><div class="d">Find a clinic and reserve a time</div></div>\
-        </div>\
-        <div class="role-card" data-act="role-clinic">\
-          <div class="ic"><svg><use href="#ic-clinic" stroke="#D8BD8D"/></svg></div>\
-          <div><div class="t">I\u2019m a clinic administrator</div><div class="d">Manage doctors and availability</div></div>\
-        </div>\
-      </div>\
-    </div>';
-  };
-
-  screenRenderers.signinPatient = function(){
-    return '\
-    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Sign in</h1><div class="sub">Patient access</div></div></div>\
-    <div class="screen-body signin-body">\
-      <div class="signin-hero"><div class="kicker">Welcome</div><h2>Let\u2019s find your next appointment</h2></div>\
-      <div class="field"><label>Mobile number</label><input type="tel" id="p-mobile" placeholder="+44 7\u2026" inputmode="tel"></div>\
-      <div class="field"><label>Full name</label><input type="text" id="p-name" placeholder="As it appears on your records"></div>\
-      <div style="flex:1"></div>\
-      <button class="btn btn-primary" data-act="patient-continue">Continue</button>\
-    </div>';
-  };
-
-  screenRenderers.signinClinic = function(){
-    return '\
-    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Sign in</h1><div class="sub">Clinic administrator</div></div></div>\
-    <div class="screen-body signin-body">\
-      <div class="signin-hero"><div class="kicker">Marlowe &amp; Finch Clinic</div><h2>Manage your practice</h2></div>\
-      <div class="field"><label>Work email</label><input type="email" id="c-email" placeholder="admin@marlowefinch.co"></div>\
-      <div class="field"><label>Password</label><input type="password" id="c-pass" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"></div>\
-      <div style="flex:1"></div>\
-      <button class="btn btn-primary" data-act="clinic-continue">Sign in to console</button>\
-    </div>';
-  };
-
-  var ROADS = [
-    { d:'M-10,150 L650,108', label:'Patnagarh Road', lx:20, ly:172 },
-    { d:'M70,-10 L128,430', label:'Station Road', lx:78, ly:28 },
-    { d:'M-10,304 L650,334', label:'Tureikela Road', lx:230, ly:352 },
-    { d:'M388,-10 L428,430', label:'Kachari Road', lx:398, ly:55 },
-    { d:'M-10,236 Q220,190 340,232 T650,262', label:'College Road', lx:470, ly:246 }
-  ];
-  var LANDMARKS = [
-    { x:118, y:56, label:'Sailashree Palace' },
-    { x:522, y:52, label:'Balangir Junction' },
-    { x:566, y:302, label:'Rajendra College' },
-    { x:468, y:196, label:'District HQ Hospital' },
-    { x:322, y:104, label:'Bus Stand' }
-  ];
-
-  function buildTownMapInner(){
-    var grid='', gx, gy;
-    for(gx=0; gx<=640; gx+=40){ grid += '<path d="M'+gx+',0 V420" stroke="rgba(237,231,218,0.05)" stroke-width="1"/>'; }
-    for(gy=0; gy<=420; gy+=40){ grid += '<path d="M0,'+gy+' H640" stroke="rgba(237,231,218,0.05)" stroke-width="1"/>'; }
-    var roads = ROADS.map(function(r){
-      return '<path d="'+r.d+'" stroke="rgba(176,141,87,0.4)" stroke-width="3" fill="none"/>\
-        <text x="'+r.lx+'" y="'+r.ly+'" font-family="Inter" font-size="9" fill="rgba(237,231,218,0.45)">'+r.label+'</text>';
+  /* =========================================================
+     LANGUAGE
+     ========================================================= */
+  var langBtn = document.getElementById('lang-btn'), langMenu = document.getElementById('lang-menu');
+  function buildLangMenu(){
+    var cur = LANGS.find(function(l){ return l.code === S.lang; });
+    document.getElementById('lang-cur').textContent = cur.name;
+    langBtn.setAttribute('aria-label', t('language') + ': ' + cur.name);
+    document.getElementById('hdr-back').setAttribute('aria-label', t('back'));
+    langMenu.innerHTML = LANGS.map(function(l){
+      return '<button class="tap lang-opt" role="option" data-lang="' + l.code + '" aria-selected="' + (l.code === S.lang) + '"><span>' + l.name + '<small>' + l.sub + '</small></span><svg viewBox="0 0 24 24"><use href="#ic-check"/></svg></button>';
     }).join('');
-    var landmarks = LANDMARKS.map(function(l){
-      return '<g transform="translate('+l.x+','+l.y+')">\
-        <circle r="4" fill="#12181F" stroke="#8AA391" stroke-width="1.5"/>\
-        <text x="8" y="4" font-family="Inter" font-size="9" font-weight="600" fill="rgba(237,231,218,0.75)">'+l.label+'</text>\
-      </g>';
-    }).join('');
-    return '\
-      <rect x="-40" y="-40" width="720" height="500" fill="#0E1319"/>\
-      '+grid+'\
-      <path d="M20,20 Q260,160 300,300 T560,410" stroke="rgba(122,168,180,0.38)" stroke-width="6" fill="none" stroke-linecap="round"/>\
-      <text x="360" y="330" font-family="Inter" font-size="9" fill="rgba(122,168,180,0.6)">Seasonal stream</text>\
-      '+roads+'\
-      '+landmarks;
+    document.documentElement.lang = S.lang;
   }
-
-  function buildMapPins(){
-    return DATA.clinics.map(function(c){
-      return '<g class="map-pin" data-act="pick-clinic-map" data-id="'+c.id+'" transform="translate('+c.x+','+c.y+')">\
-        <circle class="pulse" r="16" fill="'+c.color+'" opacity="0.35"/>\
-        <circle r="7" fill="'+c.color+'" stroke="#0E1319" stroke-width="2.5"/>\
-      </g>';
-    }).join('');
+  function toggleLang(open){
+    langMenu.hidden = !open;
+    langBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
+  langBtn.addEventListener('click', function(e){ e.stopPropagation(); toggleLang(langMenu.hidden); });
+  langMenu.addEventListener('click', function(e){
+    var b = e.target.closest('[data-lang]');
+    if(!b) return;
+    S.lang = b.getAttribute('data-lang');
+    toggleLang(false);
+    buildLangMenu();
+    saveStore();
+    render({ keepScroll:true });
+  });
+  document.addEventListener('click', function(e){ if(!langMenu.hidden && !e.target.closest('.lang')) toggleLang(false); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') toggleLang(false); });
 
-  screenRenderers.location = function(){
-    return '\
-    <div class="topbar" style="padding-top:54px;"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Find a clinic</h1><div class="sub">Near '+S.location+'</div></div></div>\
-    <div class="screen-body">\
-      <div class="search-wrap"><div class="search-box"><svg><use href="#ic-search" stroke="#EDE7DA"/></svg><input id="loc-input" placeholder="Enter a location" value="'+S.location+'"></div></div>\
-      <div class="chip-row">\
-        <div class="chip on">All specialities</div><div class="chip">Available today</div><div class="chip">Within 2 km</div><div class="chip">Top rated</div>\
-      </div>\
-      <div class="map-panel">\
-        <svg id="townmap" viewBox="0 0 640 420" preserveAspectRatio="xMidYMid meet">\
-          '+buildTownMapInner()+'\
-          '+buildMapPins()+'\
-        </svg>\
-        <div class="map-controls"><div data-act="map-zoom-in">+</div><div data-act="map-zoom-out">\u2212</div></div>\
-        <div class="map-badge"><svg width="12" height="12"><use href="#ic-pin" stroke="#D8BD8D"/></svg>'+DATA.clinics.length+' clinics in Balangir</div>\
-      </div>\
-      <div class="list-label"><h3>Clinics near you</h3><span>'+DATA.clinics.length+' results</span></div>\
-      <div class="clinic-list">'+DATA.clinics.map(clinicCardHtml).join('')+'</div>\
-    </div>';
-  };
+  document.getElementById('hdr-back').addEventListener('click', back);
+  document.getElementById('hdr-brand').addEventListener('click', function(){
+    S.history = []; S.selectedSlot = null; S.selectedDateKey = null;
+    S.screen = 'splash'; render();
+  });
 
-  function clinicCardHtml(c){
-    var docs = doctorsOf(c);
-    return '\
-    <div class="clinic-card" data-act="pick-clinic" data-id="'+c.id+'">\
-      <div class="dot" style="background:'+c.color+';">'+c.name.charAt(0)+'</div>\
-      <div class="body">\
-        <div class="name">'+c.name+'</div>\
-        <div class="meta">'+c.area+' &middot; '+docs.length+' doctor'+(docs.length>1?'s':'')+'</div>\
-        <div class="row2"><span><span class="status-dot"></span>Open now</span><span>&middot;</span><span>from '+Math.min.apply(null, docs.map(function(d){return d.duration;}))+' min slots</span></div>\
-      </div>\
-    </div>';
-  }
-
-  screenRenderers.clinicDetail = function(){
-    var c = DATA.clinics.find(function(x){ return x.id===S.selectedClinicId; });
-    var docs = doctorsOf(c);
-    return '\
-    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>'+c.name+'</h1><div class="sub">'+c.area+'</div></div></div>\
-    <div class="screen-body">\
-      <div class="list-label" style="padding-top:6px;"><h3>Available doctors</h3></div>\
-      <div class="clinic-list">'+docs.map(function(d){
-        return '<div class="doctor-card" data-act="pick-doctor" data-id="'+d.id+'">\
-          '+avatarHtml(d,56)+'\
-          <div class="body"><div class="name">'+d.name+'</div><div class="spec">'+d.spec+'</div><div class="bio">'+d.bio+'</div></div>\
-        </div>';
-      }).join('')+'</div>\
-    </div>';
-  };
-
-  screenRenderers.doctor = function(){
-    var d = DATA.doctors.find(function(x){ return x.id===S.selectedDoctorId; });
-    var c = clinicOf(d);
-    var dates = nextDays(6);
-    if(!S.selectedDateKey) S.selectedDateKey = dates[0].key;
-    var slots = buildSlots(d, S.selectedDateKey);
-    return '\
-    <div class="topbar" style="padding:54px 22px 0;"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div></div>\
-    <div class="screen-body">\
-      <div class="doctor-hero" style="padding-top:10px;">'+avatarHtml(d,72)+'<div><h2>'+d.name+'</h2><div class="spec">'+d.spec+'</div><div class="clinic">'+c.name+'</div></div></div>\
-      <hr class="hair" style="margin:6px 22px;">\
-      <div class="section-title">Select a date</div>\
-      <div class="date-strip">'+dates.map(function(dt){
-        return '<div class="date-pill '+(dt.key===S.selectedDateKey?'on':'')+'" data-act="pick-date" data-key="'+dt.key+'"><div class="d">'+dt.label+'</div><div class="n">'+dt.num+'</div></div>';
-      }).join('')+'</div>\
-      <div class="duration-note"><svg><use href="#ic-clock" stroke="#D8BD8D"/></svg>'+d.duration+'-minute consultation \u00b7 set by the clinic</div>\
-      <div class="section-title">Available times</div>\
-      <div class="slot-grid">'+slots.map(function(s){
-        var on = S.selectedSlot && S.selectedSlot.time===s.time;
-        return '<div class="slot '+(s.taken?'taken':'')+' '+(on?'on':'')+'" data-act="pick-slot" data-time="'+s.time+'">'+s.time+'</div>';
-      }).join('')+'</div>\
-      <div style="height:8px;"></div>\
-    </div>\
-    <div class="book-bar">\
-      <div><div class="price">Consultation fee</div><div class="amt">\u20b9'+d.fee+'</div></div>\
-      <button class="btn btn-primary" id="book-cta" '+(S.selectedSlot?'':'disabled')+' data-act="go-confirm">Book '+(S.selectedSlot?S.selectedSlot.time:'a time')+'</button>\
-    </div>';
-  };
-
-  screenRenderers.confirm = function(){
-    var d = DATA.doctors.find(function(x){ return x.id===S.selectedDoctorId; });
-    var c = clinicOf(d);
-    var dateLabel = new Date(S.selectedDateKey).toLocaleDateString(undefined,{ weekday:'long', month:'long', day:'numeric' });
-    return '\
-    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Confirm booking</h1></div></div>\
-    <div class="screen-body">\
-      <div class="confirm-summary">\
-        <div class="row"><span>Doctor</span><b>'+d.name+'</b></div>\
-        <div class="row"><span>Clinic</span><b>'+c.name+'</b></div>\
-        <div class="row"><span>Date</span><b>'+dateLabel+'</b></div>\
-        <div class="row"><span>Time</span><b>'+S.selectedSlot.time+' &middot; '+d.duration+' min</b></div>\
-        <div class="row"><span>Fee</span><b>\u20b9'+d.fee+' (payable at clinic)</b></div>\
-      </div>\
-      <div style="padding:20px 22px 0;" class="field"><label>Mobile number</label><input type="tel" id="confirm-mobile" placeholder="+44 7\u2026" value="'+S.bookingMobile+'" inputmode="tel"></div>\
-      <p style="padding:0 22px; font-size:12px; color:var(--linen-faint); margin-top:10px; line-height:1.5;">We\u2019ll text a one-time code to confirm this booking is really you.</p>\
-    </div>\
-    <div class="book-bar"><button class="btn btn-primary" style="flex:1;" data-act="send-otp">Send confirmation code</button></div>';
-  };
-
-  screenRenderers.otp = function(){
-    return '\
-    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Enter code</h1><div class="sub">Sent to '+S.bookingMobile+'</div></div></div>\
-    <div class="screen-body signin-body">\
-      <p style="font-size:13px; color:var(--linen-dim); margin:0;">Enter the 4-digit code we sent to confirm your appointment.</p>\
-      <div class="otp-boxes">\
-        <input maxlength="1" inputmode="numeric" class="otp-d"><input maxlength="1" inputmode="numeric" class="otp-d"><input maxlength="1" inputmode="numeric" class="otp-d"><input maxlength="1" inputmode="numeric" class="otp-d">\
-      </div>\
-      <div style="font-size:12px; color:var(--linen-faint);">Didn\u2019t get it? <span style="color:var(--brass-light); cursor:pointer;" data-act="resend-otp">Resend code</span></div>\
-      <div style="flex:1"></div>\
-      <button class="btn btn-primary" data-act="confirm-booking">Confirm appointment</button>\
-    </div>';
-  };
-
-  screenRenderers.success = function(){
-    var d = DATA.doctors.find(function(x){ return x.id===S.selectedDoctorId; });
-    var dateLabel = new Date(S.selectedDateKey).toLocaleDateString(undefined,{ weekday:'long', month:'long', day:'numeric' });
-    return '\
-    <div class="screen-body success" style="display:flex;flex-direction:column;">\
-      <div class="check-ring"><svg><use href="#ic-check" stroke="#8AA391"/></svg></div>\
-      <h2>You\u2019re booked</h2>\
-      <p>'+d.name+' will see you '+dateLabel+' at '+S.selectedSlot.time+'. A confirmation has been sent to '+S.bookingMobile+'.</p>\
-      <button class="btn btn-outline btn-sm" style="align-self:center; padding:12px 22px;" data-act="restart">Back to start</button>\
-    </div>';
-  };
-
-  screenRenderers.adminDashboard = function(){
-    var docs = DATA.doctors.filter(function(d){ return d.clinicId==='c1'; });
-    if(!S.adminDoctorId) S.adminDoctorId = docs[0].id;
-    var d = docs.find(function(x){ return x.id===S.adminDoctorId; });
-    return '\
-    <div class="admin-topbar">\
-      <div class="who"><div class="avatar" style="width:40px;height:40px;font-size:14px;background:#B08D57;">MF</div><div><div class="name">Marlowe &amp; Finch</div><div class="clinic">Administrator console</div></div></div>\
-      <div class="signout" data-act="admin-signout">Sign out</div>\
-    </div>\
-    <div class="screen-body">\
-      <div class="admin-doc-select">'+docs.map(function(x){
-        return '<div class="admin-doc-chip '+(x.id===S.adminDoctorId?'on':'')+'" data-act="admin-pick-doc" data-id="'+x.id+'"><div class="n">'+x.name.split(' ').slice(-1)[0]+'</div></div>';
-      }).join('')+'</div>\
-      <div class="panel">\
-        <h4>Doctor profile</h4>\
-        <div class="photo-row">'+avatarHtml(d,60)+'<div><label class="upload-btn">Upload photo<input type="file" accept="image/*" id="admin-photo" style="display:none;"></label></div></div>\
-        <div class="field" style="margin-bottom:12px;"><label>Full name</label><input type="text" id="admin-name" value="'+d.name+'"></div>\
-        <div class="field" style="margin-bottom:12px;"><label>Speciality</label><input type="text" id="admin-spec" value="'+d.spec+'"></div>\
-        <div class="field"><label>Bio shown to patients</label><textarea class="textarea" id="admin-bio">'+d.bio+'</textarea></div>\
-      </div>\
-      <div class="panel">\
-        <h4>Appointment slot length</h4>\
-        <div class="duration-row">\
-          <div class="dur-chip '+(d.duration===10?'on':'')+'" data-act="admin-dur" data-v="10"><div class="n">10</div><div class="u">min</div></div>\
-          <div class="dur-chip '+(d.duration===15?'on':'')+'" data-act="admin-dur" data-v="15"><div class="n">15</div><div class="u">min</div></div>\
-          <div class="dur-chip '+(d.duration===25?'on':'')+'" data-act="admin-dur" data-v="25"><div class="n">25</div><div class="u">min</div></div>\
-        </div>\
-      </div>\
-      <div class="panel">\
-        <h4>Consultation fee</h4>\
-        <div class="fee-row">\
-          <input type="range" id="admin-fee" min="100" max="600" step="50" value="'+d.fee+'">\
-          <div class="fee-amt" id="admin-fee-label">\u20b9'+d.fee+'</div>\
-        </div>\
-        <div class="fee-scale"><span>\u20b9100</span><span>\u20b9600</span></div>\
-      </div>\
-      <div class="save-bar"><button class="btn btn-primary" style="width:100%;" data-act="admin-save">Save changes</button></div>\
-    </div>';
-  };
-
-  function render(){
-    var html = screenRenderers[S.screen] ? screenRenderers[S.screen]() : '';
-    var wrap = document.createElement('div');
-    wrap.className = 'screen active';
-    wrap.innerHTML = html;
-    // clear and mount with a tiny transition
-    screensEl.innerHTML = '';
-    screensEl.appendChild(wrap);
-    requestAnimationFrame(function(){ wrap.classList.add('active'); });
-    bindEvents(wrap);
-  }
-
-  function bindEvents(root){
+  /* =========================================================
+     EVENTS
+     ========================================================= */
+  function bind(root){
     root.querySelectorAll('[data-act]').forEach(function(el){
-      el.addEventListener('click', function(){ handle(el.getAttribute('data-act'), el); });
+      el.addEventListener('click', function(ev){ handle(el.getAttribute('data-act'), el, ev); });
     });
 
-    var otpInputs = root.querySelectorAll('.otp-d');
-    otpInputs.forEach(function(inp, i){
+    root.querySelectorAll('[data-bind]').forEach(function(inp){
       inp.addEventListener('input', function(){
-        inp.value = inp.value.replace(/[^0-9]/g,'').slice(0,1);
-        if(inp.value && otpInputs[i+1]) otpInputs[i+1].focus();
-      });
-      inp.addEventListener('keydown', function(e){
-        if(e.key==='Backspace' && !inp.value && otpInputs[i-1]) otpInputs[i-1].focus();
+        if(inp.hasAttribute('data-digits')){
+          var dg = inp.value.replace(/\D/g, '');
+          if(dg.length > 10 && dg.indexOf('91') === 0) dg = dg.slice(2);
+          if(dg.length > 10 && dg.charAt(0) === '0') dg = dg.slice(1);
+          inp.value = dg.slice(0, 10);
+        }
+        S[inp.getAttribute('data-bind')] = inp.value;
       });
     });
 
-    var townmap = root.querySelector('#townmap');
-    if(townmap){
-      applyMapView(townmap);
-      var zoomInBtn = root.querySelector('[data-act="map-zoom-in"]');
-      var zoomOutBtn = root.querySelector('[data-act="map-zoom-out"]');
-      if(zoomInBtn) zoomInBtn.addEventListener('click', function(e){ e.stopPropagation(); zoomMap(townmap, 0.72); });
-      if(zoomOutBtn) zoomOutBtn.addEventListener('click', function(e){ e.stopPropagation(); zoomMap(townmap, 1/0.72); });
-
-      townmap.addEventListener('wheel', function(e){
-        e.preventDefault();
-        var rect = townmap.getBoundingClientRect();
-        var svgX = mapView.x + (e.clientX-rect.left)/rect.width * mapView.w;
-        var svgY = mapView.y + (e.clientY-rect.top)/rect.height * mapView.h;
-        zoomMap(townmap, e.deltaY<0 ? 0.9 : 1/0.9, svgX, svgY);
-      }, { passive:false });
-
-      var dragging=false, moved=false, startClientX=0, startClientY=0, startX=0, startY=0, pid=null;
-      townmap.addEventListener('pointerdown', function(e){
-        dragging=true; moved=false; mapJustDragged=false; startClientX=e.clientX; startClientY=e.clientY;
-        startX=mapView.x; startY=mapView.y; pid=e.pointerId;
+    var otp = root.querySelectorAll('.otp-d');
+    otp.forEach(function(inp, i){
+      inp.addEventListener('input', function(){
+        var v = inp.value.replace(/\D/g, '');
+        if(v.length > 1){
+          v.split('').slice(0, 4 - i).forEach(function(ch, k){ otp[i + k].value = ch; });
+          (otp[Math.min(3, i + v.length)] || inp).focus();
+          return;
+        }
+        inp.value = v;
+        if(v && otp[i + 1]) otp[i + 1].focus();
       });
-      townmap.addEventListener('pointermove', function(e){
-        if(!dragging) return;
-        var dx = e.clientX-startClientX, dy = e.clientY-startClientY;
-        if(moved || Math.abs(dx)>4 || Math.abs(dy)>4){
-          if(!moved){ moved=true; try{ townmap.setPointerCapture(pid); }catch(err){} }
-          var rect = townmap.getBoundingClientRect();
-          var factor = mapView.w / rect.width;
-          mapView.x = startX - dx*factor;
-          mapView.y = startY - dy*factor;
-          clampMapView();
-          applyMapView(townmap);
+      inp.addEventListener('keydown', function(e){ if(e.key === 'Backspace' && !inp.value && otp[i - 1]) otp[i - 1].focus(); });
+    });
+
+    var map = root.querySelector('#townmap');
+    if(map){
+      applyMapView(map);
+      root.querySelectorAll('[data-map]').forEach(function(b){
+        b.addEventListener('click', function(e){ e.stopPropagation(); zoomMap(map, b.getAttribute('data-map') === 'in' ? 0.72 : 1 / 0.72); });
+      });
+      map.addEventListener('wheel', function(e){
+        if(!e.ctrlKey && !e.metaKey) return;
+        e.preventDefault();
+        var rect = map.getBoundingClientRect();
+        zoomMap(map, e.deltaY < 0 ? 0.9 : 1 / 0.9, mapView.x + (e.clientX - rect.left) / rect.width * mapView.w, mapView.y + (e.clientY - rect.top) / rect.height * mapView.h);
+      }, { passive:false });
+      var drag = false, moved = false, sx = 0, sy = 0, ox = 0, oy = 0, pid = null;
+      map.addEventListener('pointerdown', function(e){ drag = true; moved = false; mapJustDragged = false; sx = e.clientX; sy = e.clientY; ox = mapView.x; oy = mapView.y; pid = e.pointerId; });
+      map.addEventListener('pointermove', function(e){
+        if(!drag) return;
+        var dx = e.clientX - sx, dy = e.clientY - sy;
+        if(moved || Math.abs(dx) > 4 || Math.abs(dy) > 4){
+          if(!moved){ moved = true; try{ map.setPointerCapture(pid); }catch(err){} }
+          var f = mapView.w / map.getBoundingClientRect().width;
+          mapView.x = ox - dx * f; mapView.y = oy - dy * f;
+          clampMapView(); applyMapView(map);
         }
       });
-      function endMapDrag(){ dragging=false; if(moved) mapJustDragged=true; }
-      townmap.addEventListener('pointerup', endMapDrag);
-      townmap.addEventListener('pointercancel', endMapDrag);
-      townmap.addEventListener('pointerleave', endMapDrag);
+      var end = function(){ drag = false; if(moved) mapJustDragged = true; };
+      map.addEventListener('pointerup', end);
+      map.addEventListener('pointercancel', end);
+      map.addEventListener('pointerleave', end);
     }
 
-    var feeSlider = root.querySelector('#admin-fee');
-    if(feeSlider){
+    var fee = root.querySelector('#admin-fee');
+    if(fee){
       var feeLabel = root.querySelector('#admin-fee-label');
-      feeSlider.addEventListener('input', function(){
-        feeLabel.textContent = '\u20b9' + feeSlider.value;
+      fee.addEventListener('input', function(){
+        feeLabel.textContent = '\u20b9' + fee.value;
+        fee.style.setProperty('--fill', ((fee.value - 100) / 500 * 100) + '%');
       });
-      feeSlider.addEventListener('change', function(){
-        var d = DATA.doctors.find(function(x){ return x.id===S.adminDoctorId; });
-        d.fee = parseInt(feeSlider.value, 10);
-        persist();
-      });
+      fee.addEventListener('change', function(){ doc(S.adminDoctorId).fee = parseInt(fee.value, 10); saveStore(); });
     }
 
-    var adminPhoto = root.querySelector('#admin-photo');
-    if(adminPhoto){
-      adminPhoto.addEventListener('change', function(){
-        var file = adminPhoto.files && adminPhoto.files[0];
+    var photo = root.querySelector('#admin-photo');
+    if(photo){
+      photo.addEventListener('change', function(){
+        var file = photo.files && photo.files[0];
         if(!file) return;
         var reader = new FileReader();
         reader.onload = function(){
-          var d = DATA.doctors.find(function(x){ return x.id===S.adminDoctorId; });
-          d.photo = reader.result;
-          render();
+          var img = new Image();
+          img.onload = function(){
+            var c = document.createElement('canvas'), s = 320, sc = Math.max(s / img.width, s / img.height);
+            c.width = c.height = s;
+            c.getContext('2d').drawImage(img, (s - img.width * sc) / 2, (s - img.height * sc) / 2, img.width * sc, img.height * sc);
+            captureAdminFields();
+            doc(S.adminDoctorId).photo = c.toDataURL('image/jpeg', 0.85);
+            saveStore();
+            render({ keepScroll:true });
+          };
+          img.src = reader.result;
         };
         reader.readAsDataURL(file);
       });
     }
   }
 
-  function handle(act, el){
-    if(act==='pick-clinic-map' && mapJustDragged){ mapJustDragged=false; return; }
-    if(act==='back'){ back(); return; }
+  function captureAdminFields(){
+    var d = doc(S.adminDoctorId), n = document.getElementById('admin-name');
+    if(!d || !n) return;
+    var s = document.getElementById('admin-spec'), b = document.getElementById('admin-bio');
+    if(n.value.trim()) d.name[S.lang] = n.value.trim();
+    if(s.value.trim()) d.spec[S.lang] = s.value.trim();
+    if(b.value.trim()) d.bio[S.lang] = b.value.trim();
+  }
 
-    if(act==='role-patient'){ S.role='patient'; go('signinPatient'); return; }
-    if(act==='role-clinic'){ S.role='clinic'; go('signinClinic'); return; }
+  function handle(act, el, ev){
+    if(act === 'pick-clinic-map' && mapJustDragged){ mapJustDragged = false; return; }
 
-    if(act==='patient-continue'){
-      var mob = document.getElementById('p-mobile').value.trim();
-      S.bookingMobile = mob || S.bookingMobile;
-      go('location');
-      return;
-    }
-    if(act==='clinic-continue'){
-      toast('Signed in to Marlowe & Finch');
-      go('adminDashboard');
-      return;
-    }
-
-    if(act==='pick-clinic' || act==='pick-clinic-map'){
-      S.selectedClinicId = el.getAttribute('data-id');
-      go('clinicDetail');
-      return;
-    }
-    if(act==='pick-doctor'){
+    if(act === 'role-patient'){ S.selectedDoctorId = null; go('signinPatient'); return; }
+    if(act === 'role-clinic'){ go('signinClinic'); return; }
+    if(act === 'tile-doctor'){
       S.selectedDoctorId = el.getAttribute('data-id');
-      S.selectedDateKey = null;
-      S.selectedSlot = null;
-      go('doctor');
-      return;
+      S.selectedClinicId = doc(S.selectedDoctorId).clinicId;
+      go('signinPatient'); return;
     }
-    if(act==='pick-date'){
+
+    if(act === 'patient-continue'){
+      var m = document.getElementById('p-mobile').value;
+      if(!validMobile(m)){ toast(t('err_mobile')); document.getElementById('p-mobile').focus(); return; }
+      S.bookingMobile = m;
+      S.patientName = document.getElementById('p-name').value;
+      if(S.selectedDoctorId && S.history[0] === 'splash' && S.history.length === 1){
+        S.selectedDateKey = null; S.selectedSlot = null;
+        go('doctor'); return;
+      }
+      go('location'); return;
+    }
+    if(act === 'clinic-continue'){
+      toast(t('signed_in', { clinic: L(clinic(ADMIN_CLINIC).name) }));
+      go('adminDashboard'); return;
+    }
+
+    if(act === 'pick-clinic' || act === 'pick-clinic-map'){
+      S.selectedClinicId = el.getAttribute('data-id');
+      go('clinicDetail'); return;
+    }
+    if(act === 'pick-doctor'){
+      S.selectedDoctorId = el.getAttribute('data-id');
+      S.selectedDateKey = null; S.selectedSlot = null;
+      go('doctor'); return;
+    }
+    if(act === 'pick-date'){
       S.selectedDateKey = el.getAttribute('data-key');
       S.selectedSlot = null;
-      go('doctor', {replace:true});
-      return;
+      go('doctor', { replace:true, keepScroll:true }); return;
     }
-    if(act==='pick-slot'){
-      S.selectedSlot = { time: el.getAttribute('data-time') };
-      go('doctor', {replace:true});
-      return;
+    if(act === 'pick-slot'){
+      S.selectedSlot = { minutes: parseInt(el.getAttribute('data-min'), 10) };
+      go('doctor', { replace:true, keepScroll:true }); return;
     }
-    if(act==='go-confirm'){ go('confirm'); return; }
-    if(act==='send-otp'){
-      var m = document.getElementById('confirm-mobile').value.trim();
-      if(!m){ toast('Enter a mobile number'); return; }
-      S.bookingMobile = m;
-      toast('Demo code: 4821');
-      go('otp');
-      return;
+    if(act === 'go-confirm'){ go('confirm'); return; }
+    if(act === 'send-otp'){
+      var cm = document.getElementById('confirm-mobile').value;
+      if(!validMobile(cm)){ toast(t('err_mobile')); document.getElementById('confirm-mobile').focus(); return; }
+      S.bookingMobile = cm;
+      toast(t('demo_code'));
+      go('otp'); return;
     }
-    if(act==='resend-otp'){ toast('Demo code: 4821'); return; }
-    if(act==='confirm-booking'){ go('success'); return; }
-    if(act==='restart'){
-      S.selectedSlot=null; S.selectedDateKey=null; S.history=[];
-      go('splash', {replace:true});
-      return;
+    if(act === 'resend-otp'){ toast(t('demo_code')); return; }
+    if(act === 'confirm-booking'){
+      var code = Array.prototype.map.call(document.querySelectorAll('.otp-d'), function(i){ return i.value; }).join('');
+      if(code.length < 4){ toast(t('err_otp_short')); return; }
+      if(code !== '4821'){ toast(t('err_otp_wrong')); return; }
+      S.history = [];
+      go('success', { replace:true }); return;
+    }
+    if(act === 'restart'){
+      S.selectedSlot = null; S.selectedDateKey = null; S.selectedDoctorId = null; S.history = [];
+      go('splash', { replace:true }); return;
     }
 
-    if(act==='admin-signout'){ S.history=[]; go('splash', {replace:true}); return; }
-    if(act==='admin-pick-doc'){ S.adminDoctorId = el.getAttribute('data-id'); go('adminDashboard', {replace:true}); return; }
-    if(act==='admin-dur'){
-      var d = DATA.doctors.find(function(x){ return x.id===S.adminDoctorId; });
-      d.duration = parseInt(el.getAttribute('data-v'),10);
-      go('adminDashboard', {replace:true});
-      return;
+    if(act === 'admin-signout'){ S.history = []; go('splash', { replace:true }); return; }
+    if(act === 'admin-pick-doc'){ captureAdminFields(); S.adminDoctorId = el.getAttribute('data-id'); go('adminDashboard', { replace:true, keepScroll:true }); return; }
+    if(act === 'admin-dur'){
+      captureAdminFields();
+      doc(S.adminDoctorId).duration = parseInt(el.getAttribute('data-v'), 10);
+      saveStore();
+      go('adminDashboard', { replace:true, keepScroll:true }); return;
     }
-    if(act==='admin-save'){
-      var d2 = DATA.doctors.find(function(x){ return x.id===S.adminDoctorId; });
-      d2.name = document.getElementById('admin-name').value || d2.name;
-      d2.spec = document.getElementById('admin-spec').value || d2.spec;
-      d2.bio = document.getElementById('admin-bio').value || d2.bio;
-      var feeEl = document.getElementById('admin-fee');
-      if(feeEl) d2.fee = parseInt(feeEl.value, 10);
-      persist();
-      toast('Profile saved');
+    if(act === 'admin-save'){
+      captureAdminFields();
+      var f = document.getElementById('admin-fee');
+      if(f) doc(S.adminDoctorId).fee = parseInt(f.value, 10);
+      saveStore();
+      toast(t('saved'));
+      render({ keepScroll:true });
       return;
     }
   }
 
+  /* =========================================================
+     BOOT
+     ========================================================= */
+  buildLangMenu();
+  measureHeader();
   render();
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ measureHeader(); requestTick(); });
 })();
 </script>
 </body>
