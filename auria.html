@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Auria — Appointment Concierge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12181F;
+    --ink-2:#1B222B;
+    --ink-3:#232C37;
+    --ink-line: rgba(237,231,218,0.10);
+    --linen:#EDE7DA;
+    --linen-2:#F6F2E9;
+    --linen-dim: rgba(237,231,218,0.62);
+    --linen-faint: rgba(237,231,218,0.38);
+    --brass:#B08D57;
+    --brass-light:#D8BD8D;
+    --brass-dim: rgba(176,141,87,0.16);
+    --sage:#8AA391;
+    --rosewood:#C1666B;
+    --radius-lg: 22px;
+    --radius-md: 14px;
+    --radius-sm: 9px;
+    --shadow-frame: 0 40px 90px rgba(0,0,0,0.55), 0 6px 18px rgba(0,0,0,0.35);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{margin:0; padding:0; height:100%;}
+  body{
+    background:
+      radial-gradient(120% 90% at 18% 8%, rgba(176,141,87,0.16), transparent 55%),
+      radial-gradient(100% 80% at 85% 90%, rgba(138,163,145,0.10), transparent 55%),
+      var(--ink);
+    font-family:'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--linen);
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 28px 14px;
+  }
+  .stage{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .brand-mark{ display:flex; align-items:center; gap:9px; opacity:0.9; }
+  .brand-mark .mono{
+    width:26px; height:26px; border-radius:50%;
+    border:1px solid var(--brass-light);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-style:italic; font-size:14px; color: var(--brass-light);
+  }
+  .brand-mark span{ font-family:'Fraunces', serif; font-style:italic; font-size:17px; letter-spacing:0.01em; color: var(--linen-2); }
+
+  .phone{
+    position:relative;
+    width:390px; height:844px;
+    background: var(--ink);
+    border-radius: 46px;
+    box-shadow: var(--shadow-frame), inset 0 0 0 2px rgba(237,231,218,0.06);
+    overflow:hidden;
+    border: 8px solid #05070A;
+  }
+  .notch{
+    position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    width:120px; height:22px; background:#05070A; border-radius:14px; z-index:50;
+  }
+  .statusbar{
+    position:absolute; top:0; left:0; right:0; height:46px;
+    display:flex; align-items:flex-end; justify-content:space-between;
+    padding: 0 26px 8px; font-size:13px; font-weight:600; color: var(--linen); z-index:40; letter-spacing:0.02em;
+  }
+  .screens{ position:absolute; inset:0; }
+  .screen{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    background: var(--ink);
+    transform: translateX(100%);
+    transition: transform 420ms cubic-bezier(.22,.68,0,1);
+    opacity:0; pointer-events:none;
+  }
+  .screen.active{ transform: translateX(0); opacity:1; pointer-events:auto; z-index:10;}
+  .screen.leaving-left{ transform: translateX(-100%); opacity:1; }
+  .screen.stack-under{ transform: translateX(0); opacity:1; z-index:5; }
+
+  .screen-body{ flex:1; overflow-y:auto; -ms-overflow-style:none; scrollbar-width:none; }
+  .screen-body::-webkit-scrollbar{ display:none; }
+
+  .topbar{
+    padding: 54px 22px 4px; display:flex; align-items:center; gap:12px; flex-shrink:0;
+  }
+  .backbtn{
+    width:34px; height:34px; border-radius:50%; border:1px solid var(--ink-line);
+    display:flex; align-items:center; justify-content:center; background:var(--ink-2); cursor:pointer; flex-shrink:0;
+  }
+  .backbtn svg{ width:15px; height:15px; }
+  .topbar h1{ font-family:'Fraunces', serif; font-weight:500; font-size:19px; margin:0; color:var(--linen-2); }
+  .topbar .sub{ font-size:12.5px; color:var(--linen-faint); margin-top:1px; }
+
+  h2.serif{ font-family:'Fraunces', serif; font-weight:500; }
+
+  /* ---------- Buttons & inputs ---------- */
+  .btn{
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    height:52px; border-radius: 14px; border:none; cursor:pointer;
+    font-family:'Inter'; font-size:15px; font-weight:600; letter-spacing:0.01em;
+    transition: transform 120ms ease, filter 150ms ease;
+  }
+  .btn:active{ transform: scale(0.98); }
+  .btn-primary{ background: linear-gradient(180deg, var(--brass-light), var(--brass)); color:#1A140A; }
+  .btn-primary:disabled{ opacity:0.4; pointer-events:none; }
+  .btn-ghost{ background: var(--ink-2); color: var(--linen-2); border:1px solid var(--ink-line); }
+  .btn-outline{ background:transparent; color: var(--brass-light); border:1px solid rgba(176,141,87,0.45); }
+  .btn-sm{ height:40px; font-size:13.5px; border-radius:11px; padding:0 16px; }
+
+  .field{ display:flex; flex-direction:column; gap:7px; }
+  .field label{ font-size:12.5px; color: var(--linen-dim); }
+  .field input{
+    height:50px; border-radius:13px; border:1px solid var(--ink-line); background: var(--ink-2);
+    color: var(--linen-2); padding: 0 16px; font-size:15.5px; font-family:'Inter';
+    outline:none;
+  }
+  .field input:focus{ border-color: var(--brass); }
+  .field input::placeholder{ color: var(--linen-faint); }
+
+  .otp-boxes{ display:flex; gap:10px; }
+  .otp-boxes input{ width:52px; height:58px; text-align:center; font-size:22px; font-weight:600; padding:0; }
+
+  hr.hair{ border:none; border-top:1px solid var(--ink-line); margin:18px 0; }
+
+  .toast{
+    position:absolute; left:50%; bottom:26px; transform:translateX(-50%) translateY(20px);
+    background: var(--linen-2); color:#1A1F26; padding:11px 18px; border-radius:12px;
+    font-size:13px; font-weight:600; opacity:0; transition: all 280ms ease; z-index:200; white-space:nowrap;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.35);
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ---------- Splash ---------- */
+  .splash{ align-items:center; justify-content:center; text-align:center; padding: 0 40px; }
+  .splash .mono-lg{
+    width:64px; height:64px; border-radius:50%; border:1px solid var(--brass-light);
+    display:flex; align-items:center; justify-content:center; margin: 0 auto 22px;
+    font-family:'Fraunces'; font-style:italic; font-size:30px; color:var(--brass-light);
+    animation: rise 900ms cubic-bezier(.22,.68,0,1);
+  }
+  @keyframes rise{ from{ opacity:0; transform: translateY(14px) scale(0.94);} to{opacity:1; transform:none;} }
+  .splash h1{ font-family:'Fraunces'; font-style:italic; font-weight:500; font-size:34px; margin:0 0 8px; color:var(--linen-2); animation: rise 900ms 80ms cubic-bezier(.22,.68,0,1) backwards;}
+  .splash p{ color: var(--linen-dim); font-size:14.5px; line-height:1.55; margin:0 0 40px; animation: rise 900ms 140ms cubic-bezier(.22,.68,0,1) backwards;}
+  .role-pick{ display:flex; flex-direction:column; gap:12px; width:100%; animation: rise 900ms 220ms cubic-bezier(.22,.68,0,1) backwards;}
+  .role-card{
+    border:1px solid var(--ink-line); background: var(--ink-2); border-radius:16px;
+    padding:16px 18px; display:flex; align-items:center; gap:14px; cursor:pointer; text-align:left;
+    transition: border-color 150ms ease, background 150ms ease;
+  }
+  .role-card:active{ background: var(--ink-3); }
+  .role-card .ic{ width:38px; height:38px; border-radius:50%; background: var(--brass-dim); display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .role-card .ic svg{ width:18px; height:18px; }
+  .role-card .t{ font-size:15px; font-weight:600; color:var(--linen-2);}
+  .role-card .d{ font-size:12.5px; color:var(--linen-faint); margin-top:2px; }
+
+  /* ---------- Sign in ---------- */
+  .signin-body{ padding: 8px 24px 24px; display:flex; flex-direction:column; gap:20px; flex:1; }
+  .signin-hero{ margin: 6px 0 4px; }
+  .signin-hero .kicker{ font-size:12.5px; color: var(--brass-light); font-weight:600; }
+  .signin-hero h2{ font-size:25px; margin: 6px 0 0; color:var(--linen-2); }
+
+  /* ---------- Location screen ---------- */
+  .search-wrap{ padding: 0 22px 14px; }
+  .search-box{
+    display:flex; align-items:center; gap:10px; height:50px; border-radius:14px;
+    background: var(--ink-2); border:1px solid var(--ink-line); padding:0 16px;
+  }
+  .search-box svg{ width:16px; height:16px; flex-shrink:0; opacity:0.6;}
+  .search-box input{ flex:1; border:none; background:transparent; color:var(--linen-2); font-size:15px; outline:none; font-family:'Inter';}
+  .search-box input::placeholder{ color: var(--linen-faint); }
+  .chip-row{ display:flex; gap:8px; padding: 12px 22px 2px; overflow-x:auto; }
+  .chip{ flex-shrink:0; padding:7px 13px; border-radius:20px; border:1px solid var(--ink-line); background:var(--ink-2); font-size:12.5px; color:var(--linen-dim); white-space:nowrap; cursor:pointer;}
+  .chip.on{ border-color: var(--brass); color: var(--brass-light); background: var(--brass-dim); }
+
+  .map-panel{ margin: 14px 22px 0; border-radius: 20px; overflow:hidden; border:1px solid var(--ink-line); position:relative; background:#0E1319; height:210px; }
+  .map-panel svg{ width:100%; height:100%; display:block; }
+  .map-pin{ cursor:pointer; }
+  .map-pin circle.pulse{ animation: pulse 2.4s ease-out infinite; transform-origin:center; }
+  @keyframes pulse{ 0%{ opacity:0.5; transform:scale(0.6);} 70%{opacity:0;} 100%{opacity:0;} }
+  #townmap{ touch-action:none; cursor:grab; }
+  #townmap:active{ cursor:grabbing; }
+  .map-controls{
+    position:absolute; top:12px; right:12px; display:flex; flex-direction:column;
+    border-radius:11px; overflow:hidden; border:1px solid var(--ink-line);
+  }
+  .map-controls div{
+    width:32px; height:32px; display:flex; align-items:center; justify-content:center;
+    background: rgba(18,24,31,0.88); backdrop-filter:blur(4px); color:var(--linen-2);
+    font-size:17px; font-weight:600; cursor:pointer; user-select:none; line-height:1;
+  }
+  .map-controls div:first-child{ border-bottom:1px solid var(--ink-line); }
+  .map-controls div:active{ background: rgba(176,141,87,0.35); }
+  .map-badge{
+    position:absolute; left:14px; bottom:12px; background:rgba(18,24,31,0.85); backdrop-filter:blur(4px);
+    border:1px solid var(--ink-line); border-radius:11px; padding:7px 11px; font-size:11.5px; color:var(--linen-dim); display:flex; align-items:center; gap:6px;
+  }
+
+  .list-label{ padding: 20px 22px 8px; display:flex; align-items:baseline; justify-content:space-between; }
+  .list-label h3{ font-family:'Fraunces'; font-weight:500; font-size:17px; margin:0; color: var(--linen-2); }
+  .list-label span{ font-size:12px; color: var(--linen-faint); }
+
+  .clinic-list{ padding: 0 22px 26px; display:flex; flex-direction:column; gap:12px; }
+  .clinic-card{
+    border:1px solid var(--ink-line); border-radius:17px; padding:15px 16px; background: var(--ink-2);
+    display:flex; gap:13px; cursor:pointer; transition: border-color 150ms ease;
+  }
+  .clinic-card:active{ border-color: var(--brass); }
+  .clinic-card .dot{
+    width:44px; height:44px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces'; font-style:italic; font-size:16px; color:#1A140A;
+  }
+  .clinic-card .body{ flex:1; min-width:0; }
+  .clinic-card .name{ font-size:15px; font-weight:600; color:var(--linen-2); }
+  .clinic-card .meta{ font-size:12.5px; color:var(--linen-faint); margin-top:3px; }
+  .clinic-card .row2{ display:flex; align-items:center; gap:10px; margin-top:9px; font-size:11.5px; color:var(--linen-dim); }
+  .status-dot{ width:7px; height:7px; border-radius:50%; background:var(--sage); display:inline-block; margin-right:5px;}
+
+  /* ---------- Clinic detail / doctor list ---------- */
+  .doctor-card{
+    border:1px solid var(--ink-line); border-radius:18px; padding:16px; background: var(--ink-2);
+    display:flex; gap:14px; cursor:pointer; align-items:center;
+  }
+  .avatar{
+    width:56px; height:56px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces'; font-style:italic; font-size:19px; color:#fff; position:relative; overflow:hidden;
+    border: 1.5px solid var(--brass-light);
+  }
+  .avatar img{ width:100%; height:100%; object-fit:cover; }
+  .doctor-card .name{ font-size:15.5px; font-weight:600; color:var(--linen-2); }
+  .doctor-card .spec{ font-size:12.5px; color: var(--brass-light); margin-top:2px; }
+  .doctor-card .bio{ font-size:12px; color: var(--linen-faint); margin-top:5px; line-height:1.4; }
+
+  /* ---------- Doctor / booking screen ---------- */
+  .doctor-hero{ padding: 54px 22px 18px; display:flex; gap:16px; align-items:center; }
+  .doctor-hero .avatar{ width:72px; height:72px; font-size:24px; }
+  .doctor-hero h2{ font-size:20px; margin:0; color:var(--linen-2); }
+  .doctor-hero .spec{ font-size:13px; color: var(--brass-light); margin-top:3px; }
+  .doctor-hero .clinic{ font-size:12px; color: var(--linen-faint); margin-top:5px; }
+
+  .section-title{ padding: 18px 22px 10px; font-size:12.5px; color: var(--linen-dim); font-weight:600; }
+  .date-strip{ display:flex; gap:10px; padding: 0 22px 4px; overflow-x:auto; }
+  .date-pill{
+    flex-shrink:0; width:56px; padding:10px 0; border-radius:14px; text-align:center; cursor:pointer;
+    border:1px solid var(--ink-line); background: var(--ink-2);
+  }
+  .date-pill .d{ font-size:10.5px; color:var(--linen-faint); }
+  .date-pill .n{ font-size:17px; font-weight:600; margin-top:3px; color:var(--linen-2); }
+  .date-pill.on{ background: linear-gradient(180deg, var(--brass-light), var(--brass)); border-color:transparent; }
+  .date-pill.on .d, .date-pill.on .n{ color:#1A140A; }
+
+  .duration-note{ margin:14px 22px 0; display:flex; align-items:center; gap:8px; font-size:12px; color:var(--linen-faint); }
+  .duration-note svg{ width:13px; height:13px; opacity:0.7; }
+
+  .slot-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; padding: 12px 22px 10px; }
+  .slot{
+    padding:12px 0; text-align:center; border-radius:12px; border:1px solid var(--ink-line);
+    background: var(--ink-2); font-size:13.5px; color:var(--linen-2); cursor:pointer;
+  }
+  .slot.taken{ opacity:0.32; text-decoration: line-through; pointer-events:none; }
+  .slot.on{ background: linear-gradient(180deg, var(--brass-light), var(--brass)); color:#1A140A; border-color:transparent; font-weight:600; }
+
+  .book-bar{
+    padding: 14px 22px 26px; border-top:1px solid var(--ink-line); background: var(--ink);
+    display:flex; align-items:center; gap:14px; flex-shrink:0;
+  }
+  .book-bar .price{ font-size:12px; color:var(--linen-faint); }
+  .book-bar .amt{ font-family:'Fraunces'; font-size:19px; color:var(--linen-2); }
+  .book-bar .btn{ flex:1; }
+
+  /* ---------- Confirm screen ---------- */
+  .confirm-summary{
+    margin: 18px 22px 0; border-radius:18px; border:1px solid var(--ink-line); background: var(--ink-2); padding:18px;
+  }
+  .confirm-summary .row{ display:flex; justify-content:space-between; font-size:13px; padding:7px 0; color: var(--linen-dim); }
+  .confirm-summary .row b{ color: var(--linen-2); font-weight:600; }
+
+  /* ---------- Success ---------- */
+  .success{ align-items:center; justify-content:center; text-align:center; padding: 0 40px; }
+  .check-ring{
+    width:74px; height:74px; border-radius:50%; border:1.5px solid var(--sage); display:flex; align-items:center; justify-content:center; margin: 0 auto 24px;
+    animation: rise 700ms cubic-bezier(.22,.68,0,1);
+  }
+  .check-ring svg{ width:28px; height:28px; }
+  .success h2{ font-family:'Fraunces'; font-weight:500; font-size:24px; margin:0 0 10px; color:var(--linen-2); }
+  .success p{ color:var(--linen-dim); font-size:14px; line-height:1.6; margin:0 0 30px; }
+
+  /* ---------- Admin ---------- */
+  .admin-topbar{ padding: 54px 22px 16px; display:flex; align-items:center; justify-content:space-between; }
+  .admin-topbar .who{ display:flex; align-items:center; gap:11px; }
+  .admin-topbar .name{ font-size:15px; font-weight:600; color:var(--linen-2); }
+  .admin-topbar .clinic{ font-size:12px; color:var(--linen-faint); }
+  .signout{ font-size:12px; color: var(--linen-faint); border:1px solid var(--ink-line); border-radius:10px; padding:7px 11px; cursor:pointer; background:var(--ink-2);}
+
+  .admin-doc-select{ display:flex; gap:9px; padding: 4px 22px 4px; }
+  .admin-doc-chip{ flex:1; padding:10px 8px; border-radius:13px; border:1px solid var(--ink-line); background:var(--ink-2); text-align:center; cursor:pointer; }
+  .admin-doc-chip.on{ border-color:var(--brass); background: var(--brass-dim); }
+  .admin-doc-chip .n{ font-size:12.5px; font-weight:600; color:var(--linen-2); }
+
+  .panel{ margin: 16px 22px 0; border-radius:18px; border:1px solid var(--ink-line); background: var(--ink-2); padding:18px; }
+  .panel h4{ font-family:'Fraunces'; font-weight:500; font-size:15px; margin:0 0 14px; color:var(--linen-2); }
+  .photo-row{ display:flex; align-items:center; gap:16px; margin-bottom:16px; }
+  .photo-row .avatar{ width:60px; height:60px; font-size:20px; }
+  .upload-btn{ font-size:12px; color: var(--brass-light); border:1px dashed rgba(176,141,87,0.5); border-radius:11px; padding:9px 13px; cursor:pointer; background:transparent;}
+  .textarea{ width:100%; min-height:70px; border-radius:12px; border:1px solid var(--ink-line); background: var(--ink-3); color:var(--linen-2); padding:12px 14px; font-family:'Inter'; font-size:13.5px; resize:none; outline:none; }
+  .textarea:focus{ border-color:var(--brass); }
+
+  .duration-row{ display:flex; gap:9px; }
+  .dur-chip{ flex:1; text-align:center; padding:12px 0; border-radius:12px; border:1px solid var(--ink-line); background:var(--ink-3); cursor:pointer; }
+  .dur-chip .n{ font-size:16px; font-weight:700; color:var(--linen-2); }
+  .dur-chip .u{ font-size:10.5px; color:var(--linen-faint); }
+  .dur-chip.on{ background: linear-gradient(180deg, var(--brass-light), var(--brass)); border-color:transparent; }
+  .dur-chip.on .n, .dur-chip.on .u{ color:#1A140A; }
+
+  .save-bar{ padding: 20px 22px 30px; }
+
+  .fee-row{ display:flex; align-items:center; gap:14px; }
+  .fee-amt{ font-family:'Fraunces'; font-size:18px; color:var(--brass-light); min-width:56px; text-align:right; }
+  .fee-scale{ display:flex; justify-content:space-between; margin-top:6px; font-size:10.5px; color:var(--linen-faint); }
+  input[type="range"]{
+    -webkit-appearance:none; appearance:none; flex:1; height:4px; border-radius:2px;
+    background: linear-gradient(90deg, var(--brass), var(--ink-line));
+    outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none; appearance:none; width:20px; height:20px; border-radius:50%;
+    background: linear-gradient(180deg, var(--brass-light), var(--brass));
+    border:2px solid #0E1319; cursor:pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:20px; height:20px; border-radius:50%; border:2px solid #0E1319;
+    background: linear-gradient(180deg, var(--brass-light), var(--brass)); cursor:pointer;
+  }
+
+  .homeindicator{ position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:134px; height:5px; border-radius:3px; background: rgba(237,231,218,0.35); z-index:60;}
+
+  ::selection{ background: var(--brass); color:#1A140A; }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="brand-mark"><span class="mono">A</span><span>Auria</span></div>
+
+  <div class="phone" id="phone">
+    <div class="notch"></div>
+    <div class="statusbar"><span>9:41</span><span>●●●&nbsp;&nbsp;Auria</span></div>
+    <div class="screens" id="screens"></div>
+    <div class="homeindicator"></div>
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<!-- icon defs -->
+<svg width="0" height="0" style="position:absolute">
+<symbol id="ic-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></symbol>
+<symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+<symbol id="ic-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+<symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></symbol>
+<symbol id="ic-clinic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 21V8l6-4 6 4v13"/><path d="M12 21v-6"/><path d="M9 10h.01M15 10h.01"/></symbol>
+<symbol id="ic-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></symbol>
+<symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></symbol>
+<symbol id="ic-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8z"/><circle cx="12" cy="13" r="4"/></symbol>
+</svg>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- persistence ----------------
+  function loadState(){
+    try{
+      var raw = localStorage.getItem('auria-demo-state');
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return null;
+  }
+  function persist(){
+    try{ localStorage.setItem('auria-demo-state', JSON.stringify({ doctors: DATA.doctors })); }catch(e){}
+  }
+
+  // ---------------- data ----------------
+  var DATA = {
+    clinics: [
+      { id:'c1', name:'Golebazar Family Clinic', area:'Golebazar · 0.6 km', color:'#B08D57', x:300, y:230, doctorIds:['d1','d2'] },
+      { id:'c2', name:'Kachari Road Health Centre', area:'Kachari Road, near District Court · 1.1 km', color:'#8AA391', x:430, y:150, doctorIds:['d3'] },
+      { id:'c3', name:'Tureikela Road Clinic', area:'Tureikela Road · 1.8 km', color:'#C1666B', x:190, y:310, doctorIds:['d4'] }
+    ],
+    doctors: [
+      { id:'d1', clinicId:'c1', name:'Dr. Ritesh Patnaik', spec:'General Physician', bio:'Preventive care and long-term wellness plans, with 14 years in practice around Balangir.', duration:15, fee:250, photo:null, initials:'RP', tint:'#B08D57' },
+      { id:'d2', clinicId:'c1', name:'Dr. Sasmita Meher', spec:'Dermatology', bio:'Skin health, minor procedures and cosmetic consultations.', duration:25, fee:500, photo:null, initials:'SM', tint:'#7C8FA3' },
+      { id:'d3', clinicId:'c2', name:'Dr. Debasish Sahu', spec:'Cardiology', bio:'Cardiovascular risk assessment and ongoing heart-health monitoring.', duration:25, fee:600, photo:null, initials:'DS', tint:'#8AA391' },
+      { id:'d4', clinicId:'c3', name:'Dr. Anupama Nayak', spec:'Paediatrics', bio:'Family and child medicine, with same-week appointments available.', duration:10, fee:150, photo:null, initials:'AN', tint:'#C1666B' }
+    ]
+  };
+  var saved = loadState();
+  if(saved && saved.doctors){
+    saved.doctors.forEach(function(sd){
+      var d = DATA.doctors.find(function(x){ return x.id===sd.id; });
+      if(d){ d.name=sd.name; d.spec=sd.spec; d.bio=sd.bio; d.duration=sd.duration; d.fee=sd.fee; d.photo=sd.photo; d.initials=sd.initials; }
+    });
+  }
+
+  function clinicOf(doc){ return DATA.clinics.find(function(c){ return c.id===doc.clinicId; }); }
+  function doctorsOf(clinic){ return DATA.doctors.filter(function(d){ return d.clinicId===clinic.id; }); }
+
+  function nextDays(n){
+    var out=[]; var names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var today=new Date();
+    for(var i=0;i<n;i++){
+      var d=new Date(today); d.setDate(today.getDate()+i);
+      out.push({ label: names[d.getDay()], num: d.getDate(), key: d.toISOString().slice(0,10) });
+    }
+    return out;
+  }
+
+  function buildSlots(doctor, dateKey){
+    // deterministic pseudo-random "taken" pattern from date+doctor
+    var dur = doctor.duration;
+    var startMin = 9*60, endMin = 17*60;
+    var slots = [];
+    var seed = 0; for(var i=0;i<dateKey.length;i++) seed += dateKey.charCodeAt(i);
+    seed += doctor.id.charCodeAt(1);
+    var t = startMin, idx=0;
+    while(t + dur <= endMin){
+      var h = Math.floor(t/60), m = t%60;
+      var label = (h%12===0?12:h%12) + ':' + (m<10?'0':'')+m + (h<12?'am':'pm');
+      var taken = ((seed*(idx+3)) % 7) === 0;
+      slots.push({ time: label, minutes: t, taken: taken });
+      t += dur; idx++;
+    }
+    return slots;
+  }
+
+  // ---------------- state ----------------
+  var S = {
+    screen: 'splash',
+    role: null,
+    location: 'Balangir, Odisha, India',
+    selectedClinicId: null,
+    selectedDoctorId: null,
+    selectedDateKey: null,
+    selectedSlot: null,
+    bookingMobile: '',
+    otpSent: false,
+    adminDoctorId: null,
+    history: []
+  };
+
+  var MAP_BASE = { w:640, h:420, minW:180 };
+  var mapView = { x:0, y:0, w:640, h:420 };
+  function clampMapView(){
+    if(mapView.w > MAP_BASE.w) mapView.w = MAP_BASE.w;
+    if(mapView.w < MAP_BASE.minW) mapView.w = MAP_BASE.minW;
+    mapView.h = mapView.w * (MAP_BASE.h/MAP_BASE.w);
+    if(mapView.x < 0) mapView.x = 0;
+    if(mapView.y < 0) mapView.y = 0;
+    if(mapView.x > MAP_BASE.w - mapView.w) mapView.x = MAP_BASE.w - mapView.w;
+    if(mapView.y > MAP_BASE.h - mapView.h) mapView.y = MAP_BASE.h - mapView.h;
+  }
+  function applyMapView(svg){
+    svg.setAttribute('viewBox', mapView.x.toFixed(1)+' '+mapView.y.toFixed(1)+' '+mapView.w.toFixed(1)+' '+mapView.h.toFixed(1));
+  }
+  function zoomMap(svg, factor, cx, cy){
+    var oldw = mapView.w, oldh = mapView.h;
+    if(cx===undefined){ cx = mapView.x + oldw/2; cy = mapView.y + oldh/2; }
+    var neww = oldw * factor;
+    if(neww > MAP_BASE.w) neww = MAP_BASE.w;
+    if(neww < MAP_BASE.minW) neww = MAP_BASE.minW;
+    var newh = neww * (MAP_BASE.h/MAP_BASE.w);
+    mapView.x = cx - (cx-mapView.x) * (neww/oldw);
+    mapView.y = cy - (cy-mapView.y) * (newh/oldh);
+    mapView.w = neww; mapView.h = newh;
+    clampMapView();
+    applyMapView(svg);
+  }
+
+  var mapJustDragged = false;
+  var screensEl = document.getElementById('screens');
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 2200);
+  }
+
+  function go(screen, opts){
+    opts = opts || {};
+    if(!opts.replace) S.history.push(S.screen);
+    S.screen = screen;
+    render();
+  }
+  function back(){
+    var prev = S.history.pop();
+    S.screen = prev || 'splash';
+    render();
+  }
+
+  function avatarHtml(doc, size){
+    if(doc.photo){
+      return '<div class="avatar" style="width:'+size+'px;height:'+size+'px;"><img src="'+doc.photo+'" alt=""/></div>';
+    }
+    return '<div class="avatar" style="width:'+size+'px;height:'+size+'px;background:'+doc.tint+';">'+doc.initials+'</div>';
+  }
+
+  // ---------------- screen renderers ----------------
+  var screenRenderers = {};
+
+  screenRenderers.splash = function(){
+    return '\
+    <div class="screen-body splash" style="display:flex;flex-direction:column;">\
+      <div class="mono-lg">A</div>\
+      <h1>Auria</h1>\
+      <p>A quieter way to book time with your doctor. Choose how you would like to continue.</p>\
+      <div class="role-pick">\
+        <div class="role-card" data-act="role-patient">\
+          <div class="ic"><svg><use href="#ic-user" stroke="#D8BD8D"/></svg></div>\
+          <div><div class="t">I\u2019m booking an appointment</div><div class="d">Find a clinic and reserve a time</div></div>\
+        </div>\
+        <div class="role-card" data-act="role-clinic">\
+          <div class="ic"><svg><use href="#ic-clinic" stroke="#D8BD8D"/></svg></div>\
+          <div><div class="t">I\u2019m a clinic administrator</div><div class="d">Manage doctors and availability</div></div>\
+        </div>\
+      </div>\
+    </div>';
+  };
+
+  screenRenderers.signinPatient = function(){
+    return '\
+    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Sign in</h1><div class="sub">Patient access</div></div></div>\
+    <div class="screen-body signin-body">\
+      <div class="signin-hero"><div class="kicker">Welcome</div><h2>Let\u2019s find your next appointment</h2></div>\
+      <div class="field"><label>Mobile number</label><input type="tel" id="p-mobile" placeholder="+44 7\u2026" inputmode="tel"></div>\
+      <div class="field"><label>Full name</label><input type="text" id="p-name" placeholder="As it appears on your records"></div>\
+      <div style="flex:1"></div>\
+      <button class="btn btn-primary" data-act="patient-continue">Continue</button>\
+    </div>';
+  };
+
+  screenRenderers.signinClinic = function(){
+    return '\
+    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Sign in</h1><div class="sub">Clinic administrator</div></div></div>\
+    <div class="screen-body signin-body">\
+      <div class="signin-hero"><div class="kicker">Marlowe &amp; Finch Clinic</div><h2>Manage your practice</h2></div>\
+      <div class="field"><label>Work email</label><input type="email" id="c-email" placeholder="admin@marlowefinch.co"></div>\
+      <div class="field"><label>Password</label><input type="password" id="c-pass" placeholder="\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022"></div>\
+      <div style="flex:1"></div>\
+      <button class="btn btn-primary" data-act="clinic-continue">Sign in to console</button>\
+    </div>';
+  };
+
+  var ROADS = [
+    { d:'M-10,150 L650,108', label:'Patnagarh Road', lx:20, ly:172 },
+    { d:'M70,-10 L128,430', label:'Station Road', lx:78, ly:28 },
+    { d:'M-10,304 L650,334', label:'Tureikela Road', lx:230, ly:352 },
+    { d:'M388,-10 L428,430', label:'Kachari Road', lx:398, ly:55 },
+    { d:'M-10,236 Q220,190 340,232 T650,262', label:'College Road', lx:470, ly:246 }
+  ];
+  var LANDMARKS = [
+    { x:118, y:56, label:'Sailashree Palace' },
+    { x:522, y:52, label:'Balangir Junction' },
+    { x:566, y:302, label:'Rajendra College' },
+    { x:468, y:196, label:'District HQ Hospital' },
+    { x:322, y:104, label:'Bus Stand' }
+  ];
+
+  function buildTownMapInner(){
+    var grid='', gx, gy;
+    for(gx=0; gx<=640; gx+=40){ grid += '<path d="M'+gx+',0 V420" stroke="rgba(237,231,218,0.05)" stroke-width="1"/>'; }
+    for(gy=0; gy<=420; gy+=40){ grid += '<path d="M0,'+gy+' H640" stroke="rgba(237,231,218,0.05)" stroke-width="1"/>'; }
+    var roads = ROADS.map(function(r){
+      return '<path d="'+r.d+'" stroke="rgba(176,141,87,0.4)" stroke-width="3" fill="none"/>\
+        <text x="'+r.lx+'" y="'+r.ly+'" font-family="Inter" font-size="9" fill="rgba(237,231,218,0.45)">'+r.label+'</text>';
+    }).join('');
+    var landmarks = LANDMARKS.map(function(l){
+      return '<g transform="translate('+l.x+','+l.y+')">\
+        <circle r="4" fill="#12181F" stroke="#8AA391" stroke-width="1.5"/>\
+        <text x="8" y="4" font-family="Inter" font-size="9" font-weight="600" fill="rgba(237,231,218,0.75)">'+l.label+'</text>\
+      </g>';
+    }).join('');
+    return '\
+      <rect x="-40" y="-40" width="720" height="500" fill="#0E1319"/>\
+      '+grid+'\
+      <path d="M20,20 Q260,160 300,300 T560,410" stroke="rgba(122,168,180,0.38)" stroke-width="6" fill="none" stroke-linecap="round"/>\
+      <text x="360" y="330" font-family="Inter" font-size="9" fill="rgba(122,168,180,0.6)">Seasonal stream</text>\
+      '+roads+'\
+      '+landmarks;
+  }
+
+  function buildMapPins(){
+    return DATA.clinics.map(function(c){
+      return '<g class="map-pin" data-act="pick-clinic-map" data-id="'+c.id+'" transform="translate('+c.x+','+c.y+')">\
+        <circle class="pulse" r="16" fill="'+c.color+'" opacity="0.35"/>\
+        <circle r="7" fill="'+c.color+'" stroke="#0E1319" stroke-width="2.5"/>\
+      </g>';
+    }).join('');
+  }
+
+  screenRenderers.location = function(){
+    return '\
+    <div class="topbar" style="padding-top:54px;"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Find a clinic</h1><div class="sub">Near '+S.location+'</div></div></div>\
+    <div class="screen-body">\
+      <div class="search-wrap"><div class="search-box"><svg><use href="#ic-search" stroke="#EDE7DA"/></svg><input id="loc-input" placeholder="Enter a location" value="'+S.location+'"></div></div>\
+      <div class="chip-row">\
+        <div class="chip on">All specialities</div><div class="chip">Available today</div><div class="chip">Within 2 km</div><div class="chip">Top rated</div>\
+      </div>\
+      <div class="map-panel">\
+        <svg id="townmap" viewBox="0 0 640 420" preserveAspectRatio="xMidYMid meet">\
+          '+buildTownMapInner()+'\
+          '+buildMapPins()+'\
+        </svg>\
+        <div class="map-controls"><div data-act="map-zoom-in">+</div><div data-act="map-zoom-out">\u2212</div></div>\
+        <div class="map-badge"><svg width="12" height="12"><use href="#ic-pin" stroke="#D8BD8D"/></svg>'+DATA.clinics.length+' clinics in Balangir</div>\
+      </div>\
+      <div class="list-label"><h3>Clinics near you</h3><span>'+DATA.clinics.length+' results</span></div>\
+      <div class="clinic-list">'+DATA.clinics.map(clinicCardHtml).join('')+'</div>\
+    </div>';
+  };
+
+  function clinicCardHtml(c){
+    var docs = doctorsOf(c);
+    return '\
+    <div class="clinic-card" data-act="pick-clinic" data-id="'+c.id+'">\
+      <div class="dot" style="background:'+c.color+';">'+c.name.charAt(0)+'</div>\
+      <div class="body">\
+        <div class="name">'+c.name+'</div>\
+        <div class="meta">'+c.area+' &middot; '+docs.length+' doctor'+(docs.length>1?'s':'')+'</div>\
+        <div class="row2"><span><span class="status-dot"></span>Open now</span><span>&middot;</span><span>from '+Math.min.apply(null, docs.map(function(d){return d.duration;}))+' min slots</span></div>\
+      </div>\
+    </div>';
+  }
+
+  screenRenderers.clinicDetail = function(){
+    var c = DATA.clinics.find(function(x){ return x.id===S.selectedClinicId; });
+    var docs = doctorsOf(c);
+    return '\
+    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>'+c.name+'</h1><div class="sub">'+c.area+'</div></div></div>\
+    <div class="screen-body">\
+      <div class="list-label" style="padding-top:6px;"><h3>Available doctors</h3></div>\
+      <div class="clinic-list">'+docs.map(function(d){
+        return '<div class="doctor-card" data-act="pick-doctor" data-id="'+d.id+'">\
+          '+avatarHtml(d,56)+'\
+          <div class="body"><div class="name">'+d.name+'</div><div class="spec">'+d.spec+'</div><div class="bio">'+d.bio+'</div></div>\
+        </div>';
+      }).join('')+'</div>\
+    </div>';
+  };
+
+  screenRenderers.doctor = function(){
+    var d = DATA.doctors.find(function(x){ return x.id===S.selectedDoctorId; });
+    var c = clinicOf(d);
+    var dates = nextDays(6);
+    if(!S.selectedDateKey) S.selectedDateKey = dates[0].key;
+    var slots = buildSlots(d, S.selectedDateKey);
+    return '\
+    <div class="topbar" style="padding:54px 22px 0;"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div></div>\
+    <div class="screen-body">\
+      <div class="doctor-hero" style="padding-top:10px;">'+avatarHtml(d,72)+'<div><h2>'+d.name+'</h2><div class="spec">'+d.spec+'</div><div class="clinic">'+c.name+'</div></div></div>\
+      <hr class="hair" style="margin:6px 22px;">\
+      <div class="section-title">Select a date</div>\
+      <div class="date-strip">'+dates.map(function(dt){
+        return '<div class="date-pill '+(dt.key===S.selectedDateKey?'on':'')+'" data-act="pick-date" data-key="'+dt.key+'"><div class="d">'+dt.label+'</div><div class="n">'+dt.num+'</div></div>';
+      }).join('')+'</div>\
+      <div class="duration-note"><svg><use href="#ic-clock" stroke="#D8BD8D"/></svg>'+d.duration+'-minute consultation \u00b7 set by the clinic</div>\
+      <div class="section-title">Available times</div>\
+      <div class="slot-grid">'+slots.map(function(s){
+        var on = S.selectedSlot && S.selectedSlot.time===s.time;
+        return '<div class="slot '+(s.taken?'taken':'')+' '+(on?'on':'')+'" data-act="pick-slot" data-time="'+s.time+'">'+s.time+'</div>';
+      }).join('')+'</div>\
+      <div style="height:8px;"></div>\
+    </div>\
+    <div class="book-bar">\
+      <div><div class="price">Consultation fee</div><div class="amt">\u20b9'+d.fee+'</div></div>\
+      <button class="btn btn-primary" id="book-cta" '+(S.selectedSlot?'':'disabled')+' data-act="go-confirm">Book '+(S.selectedSlot?S.selectedSlot.time:'a time')+'</button>\
+    </div>';
+  };
+
+  screenRenderers.confirm = function(){
+    var d = DATA.doctors.find(function(x){ return x.id===S.selectedDoctorId; });
+    var c = clinicOf(d);
+    var dateLabel = new Date(S.selectedDateKey).toLocaleDateString(undefined,{ weekday:'long', month:'long', day:'numeric' });
+    return '\
+    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Confirm booking</h1></div></div>\
+    <div class="screen-body">\
+      <div class="confirm-summary">\
+        <div class="row"><span>Doctor</span><b>'+d.name+'</b></div>\
+        <div class="row"><span>Clinic</span><b>'+c.name+'</b></div>\
+        <div class="row"><span>Date</span><b>'+dateLabel+'</b></div>\
+        <div class="row"><span>Time</span><b>'+S.selectedSlot.time+' &middot; '+d.duration+' min</b></div>\
+        <div class="row"><span>Fee</span><b>\u20b9'+d.fee+' (payable at clinic)</b></div>\
+      </div>\
+      <div style="padding:20px 22px 0;" class="field"><label>Mobile number</label><input type="tel" id="confirm-mobile" placeholder="+44 7\u2026" value="'+S.bookingMobile+'" inputmode="tel"></div>\
+      <p style="padding:0 22px; font-size:12px; color:var(--linen-faint); margin-top:10px; line-height:1.5;">We\u2019ll text a one-time code to confirm this booking is really you.</p>\
+    </div>\
+    <div class="book-bar"><button class="btn btn-primary" style="flex:1;" data-act="send-otp">Send confirmation code</button></div>';
+  };
+
+  screenRenderers.otp = function(){
+    return '\
+    <div class="topbar"><div class="backbtn" data-act="back"><svg><use href="#ic-back" stroke="#EDE7DA"/></svg></div><div><h1>Enter code</h1><div class="sub">Sent to '+S.bookingMobile+'</div></div></div>\
+    <div class="screen-body signin-body">\
+      <p style="font-size:13px; color:var(--linen-dim); margin:0;">Enter the 4-digit code we sent to confirm your appointment.</p>\
+      <div class="otp-boxes">\
+        <input maxlength="1" inputmode="numeric" class="otp-d"><input maxlength="1" inputmode="numeric" class="otp-d"><input maxlength="1" inputmode="numeric" class="otp-d"><input maxlength="1" inputmode="numeric" class="otp-d">\
+      </div>\
+      <div style="font-size:12px; color:var(--linen-faint);">Didn\u2019t get it? <span style="color:var(--brass-light); cursor:pointer;" data-act="resend-otp">Resend code</span></div>\
+      <div style="flex:1"></div>\
+      <button class="btn btn-primary" data-act="confirm-booking">Confirm appointment</button>\
+    </div>';
+  };
+
+  screenRenderers.success = function(){
+    var d = DATA.doctors.find(function(x){ return x.id===S.selectedDoctorId; });
+    var dateLabel = new Date(S.selectedDateKey).toLocaleDateString(undefined,{ weekday:'long', month:'long', day:'numeric' });
+    return '\
+    <div class="screen-body success" style="display:flex;flex-direction:column;">\
+      <div class="check-ring"><svg><use href="#ic-check" stroke="#8AA391"/></svg></div>\
+      <h2>You\u2019re booked</h2>\
+      <p>'+d.name+' will see you '+dateLabel+' at '+S.selectedSlot.time+'. A confirmation has been sent to '+S.bookingMobile+'.</p>\
+      <button class="btn btn-outline btn-sm" style="align-self:center; padding:12px 22px;" data-act="restart">Back to start</button>\
+    </div>';
+  };
+
+  screenRenderers.adminDashboard = function(){
+    var docs = DATA.doctors.filter(function(d){ return d.clinicId==='c1'; });
+    if(!S.adminDoctorId) S.adminDoctorId = docs[0].id;
+    var d = docs.find(function(x){ return x.id===S.adminDoctorId; });
+    return '\
+    <div class="admin-topbar">\
+      <div class="who"><div class="avatar" style="width:40px;height:40px;font-size:14px;background:#B08D57;">MF</div><div><div class="name">Marlowe &amp; Finch</div><div class="clinic">Administrator console</div></div></div>\
+      <div class="signout" data-act="admin-signout">Sign out</div>\
+    </div>\
+    <div class="screen-body">\
+      <div class="admin-doc-select">'+docs.map(function(x){
+        return '<div class="admin-doc-chip '+(x.id===S.adminDoctorId?'on':'')+'" data-act="admin-pick-doc" data-id="'+x.id+'"><div class="n">'+x.name.split(' ').slice(-1)[0]+'</div></div>';
+      }).join('')+'</div>\
+      <div class="panel">\
+        <h4>Doctor profile</h4>\
+        <div class="photo-row">'+avatarHtml(d,60)+'<div><label class="upload-btn">Upload photo<input type="file" accept="image/*" id="admin-photo" style="display:none;"></label></div></div>\
+        <div class="field" style="margin-bottom:12px;"><label>Full name</label><input type="text" id="admin-name" value="'+d.name+'"></div>\
+        <div class="field" style="margin-bottom:12px;"><label>Speciality</label><input type="text" id="admin-spec" value="'+d.spec+'"></div>\
+        <div class="field"><label>Bio shown to patients</label><textarea class="textarea" id="admin-bio">'+d.bio+'</textarea></div>\
+      </div>\
+      <div class="panel">\
+        <h4>Appointment slot length</h4>\
+        <div class="duration-row">\
+          <div class="dur-chip '+(d.duration===10?'on':'')+'" data-act="admin-dur" data-v="10"><div class="n">10</div><div class="u">min</div></div>\
+          <div class="dur-chip '+(d.duration===15?'on':'')+'" data-act="admin-dur" data-v="15"><div class="n">15</div><div class="u">min</div></div>\
+          <div class="dur-chip '+(d.duration===25?'on':'')+'" data-act="admin-dur" data-v="25"><div class="n">25</div><div class="u">min</div></div>\
+        </div>\
+      </div>\
+      <div class="panel">\
+        <h4>Consultation fee</h4>\
+        <div class="fee-row">\
+          <input type="range" id="admin-fee" min="100" max="600" step="50" value="'+d.fee+'">\
+          <div class="fee-amt" id="admin-fee-label">\u20b9'+d.fee+'</div>\
+        </div>\
+        <div class="fee-scale"><span>\u20b9100</span><span>\u20b9600</span></div>\
+      </div>\
+      <div class="save-bar"><button class="btn btn-primary" style="width:100%;" data-act="admin-save">Save changes</button></div>\
+    </div>';
+  };
+
+  function render(){
+    var html = screenRenderers[S.screen] ? screenRenderers[S.screen]() : '';
+    var wrap = document.createElement('div');
+    wrap.className = 'screen active';
+    wrap.innerHTML = html;
+    // clear and mount with a tiny transition
+    screensEl.innerHTML = '';
+    screensEl.appendChild(wrap);
+    requestAnimationFrame(function(){ wrap.classList.add('active'); });
+    bindEvents(wrap);
+  }
+
+  function bindEvents(root){
+    root.querySelectorAll('[data-act]').forEach(function(el){
+      el.addEventListener('click', function(){ handle(el.getAttribute('data-act'), el); });
+    });
+
+    var otpInputs = root.querySelectorAll('.otp-d');
+    otpInputs.forEach(function(inp, i){
+      inp.addEventListener('input', function(){
+        inp.value = inp.value.replace(/[^0-9]/g,'').slice(0,1);
+        if(inp.value && otpInputs[i+1]) otpInputs[i+1].focus();
+      });
+      inp.addEventListener('keydown', function(e){
+        if(e.key==='Backspace' && !inp.value && otpInputs[i-1]) otpInputs[i-1].focus();
+      });
+    });
+
+    var townmap = root.querySelector('#townmap');
+    if(townmap){
+      applyMapView(townmap);
+      var zoomInBtn = root.querySelector('[data-act="map-zoom-in"]');
+      var zoomOutBtn = root.querySelector('[data-act="map-zoom-out"]');
+      if(zoomInBtn) zoomInBtn.addEventListener('click', function(e){ e.stopPropagation(); zoomMap(townmap, 0.72); });
+      if(zoomOutBtn) zoomOutBtn.addEventListener('click', function(e){ e.stopPropagation(); zoomMap(townmap, 1/0.72); });
+
+      townmap.addEventListener('wheel', function(e){
+        e.preventDefault();
+        var rect = townmap.getBoundingClientRect();
+        var svgX = mapView.x + (e.clientX-rect.left)/rect.width * mapView.w;
+        var svgY = mapView.y + (e.clientY-rect.top)/rect.height * mapView.h;
+        zoomMap(townmap, e.deltaY<0 ? 0.9 : 1/0.9, svgX, svgY);
+      }, { passive:false });
+
+      var dragging=false, moved=false, startClientX=0, startClientY=0, startX=0, startY=0, pid=null;
+      townmap.addEventListener('pointerdown', function(e){
+        dragging=true; moved=false; mapJustDragged=false; startClientX=e.clientX; startClientY=e.clientY;
+        startX=mapView.x; startY=mapView.y; pid=e.pointerId;
+      });
+      townmap.addEventListener('pointermove', function(e){
+        if(!dragging) return;
+        var dx = e.clientX-startClientX, dy = e.clientY-startClientY;
+        if(moved || Math.abs(dx)>4 || Math.abs(dy)>4){
+          if(!moved){ moved=true; try{ townmap.setPointerCapture(pid); }catch(err){} }
+          var rect = townmap.getBoundingClientRect();
+          var factor = mapView.w / rect.width;
+          mapView.x = startX - dx*factor;
+          mapView.y = startY - dy*factor;
+          clampMapView();
+          applyMapView(townmap);
+        }
+      });
+      function endMapDrag(){ dragging=false; if(moved) mapJustDragged=true; }
+      townmap.addEventListener('pointerup', endMapDrag);
+      townmap.addEventListener('pointercancel', endMapDrag);
+      townmap.addEventListener('pointerleave', endMapDrag);
+    }
+
+    var feeSlider = root.querySelector('#admin-fee');
+    if(feeSlider){
+      var feeLabel = root.querySelector('#admin-fee-label');
+      feeSlider.addEventListener('input', function(){
+        feeLabel.textContent = '\u20b9' + feeSlider.value;
+      });
+      feeSlider.addEventListener('change', function(){
+        var d = DATA.doctors.find(function(x){ return x.id===S.adminDoctorId; });
+        d.fee = parseInt(feeSlider.value, 10);
+        persist();
+      });
+    }
+
+    var adminPhoto = root.querySelector('#admin-photo');
+    if(adminPhoto){
+      adminPhoto.addEventListener('change', function(){
+        var file = adminPhoto.files && adminPhoto.files[0];
+        if(!file) return;
+        var reader = new FileReader();
+        reader.onload = function(){
+          var d = DATA.doctors.find(function(x){ return x.id===S.adminDoctorId; });
+          d.photo = reader.result;
+          render();
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  }
+
+  function handle(act, el){
+    if(act==='pick-clinic-map' && mapJustDragged){ mapJustDragged=false; return; }
+    if(act==='back'){ back(); return; }
+
+    if(act==='role-patient'){ S.role='patient'; go('signinPatient'); return; }
+    if(act==='role-clinic'){ S.role='clinic'; go('signinClinic'); return; }
+
+    if(act==='patient-continue'){
+      var mob = document.getElementById('p-mobile').value.trim();
+      S.bookingMobile = mob || S.bookingMobile;
+      go('location');
+      return;
+    }
+    if(act==='clinic-continue'){
+      toast('Signed in to Marlowe & Finch');
+      go('adminDashboard');
+      return;
+    }
+
+    if(act==='pick-clinic' || act==='pick-clinic-map'){
+      S.selectedClinicId = el.getAttribute('data-id');
+      go('clinicDetail');
+      return;
+    }
+    if(act==='pick-doctor'){
+      S.selectedDoctorId = el.getAttribute('data-id');
+      S.selectedDateKey = null;
+      S.selectedSlot = null;
+      go('doctor');
+      return;
+    }
+    if(act==='pick-date'){
+      S.selectedDateKey = el.getAttribute('data-key');
+      S.selectedSlot = null;
+      go('doctor', {replace:true});
+      return;
+    }
+    if(act==='pick-slot'){
+      S.selectedSlot = { time: el.getAttribute('data-time') };
+      go('doctor', {replace:true});
+      return;
+    }
+    if(act==='go-confirm'){ go('confirm'); return; }
+    if(act==='send-otp'){
+      var m = document.getElementById('confirm-mobile').value.trim();
+      if(!m){ toast('Enter a mobile number'); return; }
+      S.bookingMobile = m;
+      toast('Demo code: 4821');
+      go('otp');
+      return;
+    }
+    if(act==='resend-otp'){ toast('Demo code: 4821'); return; }
+    if(act==='confirm-booking'){ go('success'); return; }
+    if(act==='restart'){
+      S.selectedSlot=null; S.selectedDateKey=null; S.history=[];
+      go('splash', {replace:true});
+      return;
+    }
+
+    if(act==='admin-signout'){ S.history=[]; go('splash', {replace:true}); return; }
+    if(act==='admin-pick-doc'){ S.adminDoctorId = el.getAttribute('data-id'); go('adminDashboard', {replace:true}); return; }
+    if(act==='admin-dur'){
+      var d = DATA.doctors.find(function(x){ return x.id===S.adminDoctorId; });
+      d.duration = parseInt(el.getAttribute('data-v'),10);
+      go('adminDashboard', {replace:true});
+      return;
+    }
+    if(act==='admin-save'){
+      var d2 = DATA.doctors.find(function(x){ return x.id===S.adminDoctorId; });
+      d2.name = document.getElementById('admin-name').value || d2.name;
+      d2.spec = document.getElementById('admin-spec').value || d2.spec;
+      d2.bio = document.getElementById('admin-bio').value || d2.bio;
+      var feeEl = document.getElementById('admin-fee');
+      if(feeEl) d2.fee = parseInt(feeEl.value, 10);
+      persist();
+      toast('Profile saved');
+      return;
+    }
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
